@@ -14,7 +14,7 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(),
             [
-                'name' => 'required|min:3',
+                'username' => 'required|min:3',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6',
             ]);
@@ -34,7 +34,7 @@ class AuthController extends Controller
             // If you get this far, validation passed, so create the user in the database.
             $user = User::create(
             [
-                'name' => $request->name,
+                'username' => $request->username,
                 'email' => $request->email,
                 'password' => bcrypt($request->password)
             ]);
