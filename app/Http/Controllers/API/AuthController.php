@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Role;
 use Auth;
 
 class AuthController extends Controller
@@ -14,7 +15,7 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(),
             [
-                'username' => 'required|min:3',
+                'username' => 'required|min:3|unique:users',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6',
             ]);
@@ -38,6 +39,14 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => bcrypt($request->password)
             ]);
+             // Assign the 'customer' role to the user
+            $defaultRole = Role::where('name', 'customer')->first();
+            if ($defaultRole) {
+            $user->roles()->attach($defaultRole);
+            }
+
+
+
 
             $token = $user->createToken('api-example-salt')->plainTextToken;
 
@@ -95,8 +104,21 @@ class AuthController extends Controller
     }
 
     public function user(){
+
+
+        $user = Auth::user();
+
+        // unset($user["wins"]);
+        // unset($user["loses"]);
+        // unset($user["kills"]);
+
+        
+        $user->load('roles');
+        $roles = $user->roles->pluck('name')->toArray();
+       
         return response()->json([
-            'user'=>Auth::user()
+            'user'=> $user,
+            'roles'=>$roles
         ],200);
     }
 
