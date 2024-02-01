@@ -52,7 +52,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => 'Success',
-                'message'=>'user created successfully',
+                'message'=>'Welcome to the community ' . $user->username,
                 'token' => $token
             ],200);
         }
@@ -91,7 +91,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => 'Success',
-                'message'=>'user logged in successfully',
+                'message'=>'Welcome back ' . $user->username,
                 'token' => $token
             ],200);
         }
@@ -113,12 +113,12 @@ class AuthController extends Controller
         // unset($user["kills"]);
 
         
-        $user->load('roles');
-        $roles = $user->roles->pluck('name')->toArray();
-       
+        $user->load('roles:id,name');
+       $user->roles->makeHidden('pivot');
+        
+        
         return response()->json([
             'user'=> $user,
-            'roles'=>$roles
         ],200);
     }
 

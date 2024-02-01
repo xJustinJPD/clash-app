@@ -52,6 +52,11 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Models\Role', 'user_role');
     }
 
+    public function teams()
+    {
+        return $this->belongsToMany('App\Models\Team', 'user_team');
+    }
+
     public function authorizeRoles($roles)
     {
         //IF the user doesnt have a role for the specific view show the 401 message
