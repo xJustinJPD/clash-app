@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TeamController;
-
+use App\Http\Controllers\API\GameController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,6 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // New routes for leaving a team and removing a user
     Route::delete('/teams/{id}/leave', [TeamController::class, 'leaveTeam']);
     Route::delete('/teams/{id}/remove-user/{userId}', [TeamController::class, 'removeUser']);
+
+    //games routes
+    Route::get('/games', [GameController::class, 'index']);
 });
 
 
