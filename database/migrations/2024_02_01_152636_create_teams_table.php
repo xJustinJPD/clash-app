@@ -17,7 +17,10 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->integer('wins')->default(0); 
             $table->integer('losses')->default(0);
+            $table->unsignedBigInteger('creator_id');
             $table->timestamps();
+
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

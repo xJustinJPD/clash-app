@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\TeamController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,17 +15,25 @@ use App\Http\Controllers\API\AuthController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('/auth/register', [AuthController::class, 'register']);
-
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-//protected routes, ,must be logged in to view
-Route::middleware('auth:sanctum')->group(function(){
+// Protected routes, must be logged in to view
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::get('/auth/logout', [AuthController::class, 'logout']);
+    
+    // Team routes
+    Route::get('/teams', [TeamController::class, 'index']);
+    Route::post('/teams', [TeamController::class, 'store']);
+    Route::get('/teams/{id}', [TeamController::class, 'show']);
+    Route::put('/teams/{id}', [TeamController::class, 'update']);
+    Route::delete('/teams/{id}', [TeamController::class, 'destroy']);
+    Route::post('/teams/{id}/join', [TeamController::class, 'joinTeam']);
+    
+    // New routes for leaving a team and removing a user
+    Route::delete('/teams/{id}/leave', [TeamController::class, 'leaveTeam']);
+    Route::delete('/teams/{id}/remove-user/{userId}', [TeamController::class, 'removeUser']);
 });
+
+
