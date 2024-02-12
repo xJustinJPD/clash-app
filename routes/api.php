@@ -31,12 +31,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/teams/{id}', [TeamController::class, 'destroy']);
     Route::post('/teams/{id}/join', [TeamController::class, 'joinTeam']);
     
-    // New routes for leaving a team and removing a user
+    // New routes for leaving a team, removing a user and adding user
     Route::delete('/teams/{id}/leave', [TeamController::class, 'leaveTeam']);
     Route::delete('/teams/{id}/remove-user/{userId}', [TeamController::class, 'removeUser']);
+    Route::post('/teams/{teamId}/invite-user', [TeamController::class, 'inviteUser']);
+
+
+
 
     //games routes
     Route::get('/games', [GameController::class, 'index']);
+    Route::post('/games', [GameController::class, 'store']);
+    Route::put('/games/{id}', [GameController::class, 'update']);
 });
 
 

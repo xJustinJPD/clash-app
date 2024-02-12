@@ -17,6 +17,7 @@ class TeamSeeder extends Seeder
     {
         $team1 = Team::create([
             'name' => 'Example Team 1',
+            'size' => 1,
             'image' => 'no_image_available.jpg',
             'wins' => 5,
             'losses' => 5,
@@ -26,6 +27,7 @@ class TeamSeeder extends Seeder
         $team1->users()->attach($creator1->id);
         $team2 = Team::create([
             'name' => 'Example Team 2',
+            'size' => 1,
             'image' => 'no_image_available.jpg',
             'wins' => 2,
             'losses' => 4,

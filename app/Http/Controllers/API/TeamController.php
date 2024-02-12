@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class TeamController extends Controller
@@ -33,29 +34,35 @@ class TeamController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'size' => 'required|integer|max:5',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'Error: see errors',
                 'errors' => $validator->errors()
             ], 422);
         }
-
+    
         $imageName = 'no_image_available.jpg';
-
+    
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('images'), $imageName);
         }
-        $team->users()->attach(Auth::id());
+    
+        // Instantiate the Team model
         $team = new Team();
         $team->name = $request->input('name');
+        $team->size = $request->input('size');
         $team->image = $imageName;
         $team->creator_id = Auth::id();
         $team->save();
-
+    
+        
+        $team->users()->attach(Auth::id());
+    
         return response()->json([
             'status' => 'success',
             'data' => $team
@@ -108,6 +115,7 @@ class TeamController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:50',
+                'size' => 'required|integer|max:5',
                 'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
         }
@@ -120,7 +128,7 @@ class TeamController extends Controller
         }
 
         $team->name = $request->input('name');
-
+        $team->size = $request->input('size');
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time().'.'.$image->getClientOriginalExtension();
@@ -179,11 +187,20 @@ class TeamController extends Controller
     {
         $userId = Auth::id();
         $team = Team::find($id);
+
         if ($team === null) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Team not found.'
             ], 404);
+        }
+
+   
+        if ($team->size !== null && $team->users->count() >= $team->size) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Team size limit reached. Cannot join.'
+            ], 400);
         }
 
         if (!$team->users->contains($userId)) {
@@ -272,4 +289,75 @@ class TeamController extends Controller
             ], 403);
         }
     }
+
+    public function inviteUser(Request $request, $teamId)
+    {
+        $creatorId = Auth::id();
+        $team = Team::find($teamId);
+    
+        if ($team === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Team not found.'
+            ], 404);
+        }
+    
+        $input = $request->all();
+        $userId = $input['user_id'] ?? null;
+        $username = $input['username'] ?? null;
+    
+        if (!$userId && !$username) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please provide either user_id or username.'
+            ], 400);
+        }
+    
+        $user = null;
+    
+        if ($userId) {
+            $user = User::find($userId);
+        }
+    
+        if (!$user && $username) {
+            $user = User::where('username', $username)->first();
+        }
+    
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found.'
+            ], 404);
+        }
+    
+        if ($team->size !== null && $team->users->count() >= $team->size) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Team size limit reached. Cannot invite more users.'
+            ], 400);
+        }
+    
+        if ($team->creator_id !== $creatorId) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Only the captain of the team can invite users.'
+            ], 403);
+        }
+    
+        if ($team->users->contains($user->id)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User is already a member of the team.'
+            ], 400);
+        }
+    
+        $team->users()->attach($user->id);
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User invited to the team successfully.'
+        ], 200);
+    }
+    
 }
+ 
