@@ -130,7 +130,7 @@ class GameController extends Controller
             $team2->image = $team2ImageName;
             $team2->save();
         }
-    
+        $game->status = 'finished';
         $game->save();
     
         return response()->json([
@@ -138,7 +138,51 @@ class GameController extends Controller
             'message' => 'Game results updated successfully.',
             'data' => $game
         ], 200);
+
     }
+
+    public function cancel(Request $request, $id)
+    {
+        $game = Game::findOrFail($id);
+    
+        if ($game === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Game not found.',
+            ], 404);
+        }
+    
+        $user = Auth::user();
+        $team1 = $game->team1;
+        $team2 = $game->team2;
+    
+        if ($user->roles->contains('name', 'admin') || ($user->id === $team1->creator_id) || ($user->id === $team2->creator_id)) {
+            if ($user->id === $team1->creator_id) {
+                $game->team_1_result = false;
+                $game->team_2_result = true;
+            }
+            if ($user->id === $team2->creator_id) {
+                $game->team_2_result = false;
+                $game->team_1_result = true;
+            }
+    
+            $game->status = 'cancelled';
+            $game->save();
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Game cancelled successfully.',
+                'data' => $game
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to cancel the game.',
+            ], 403);
+        }
+    }
+    
+
     
  
 

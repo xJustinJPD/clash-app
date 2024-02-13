@@ -76,6 +76,12 @@ class User extends Authenticatable
     public function hasAnyRole($roles)
     {
         return null !== $this->roles()->whereIn('name', $roles)->first();
-    }   
+    }
+    public function gameStats()
+    {
+        return $this->hasMany(UserTeamGameStat::class);
+    }
+    
+    
    
 }

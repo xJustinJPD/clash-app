@@ -29,7 +29,10 @@ class Team extends Model
     {
         return $this->hasMany(Game::class, 'team_id_2');
     }
-    
+    public function gameStats()
+    {
+        return $this->hasMany(UserTeamGameStat::class);
+    }
     
 }
 
