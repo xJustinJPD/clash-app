@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\TeamResource;
 
 class TeamController extends Controller
 {
@@ -21,11 +22,14 @@ class TeamController extends Controller
             ], 401);
         }
 
-        $teams = Team::with('users')->get();
-        $teams->makeHidden('creator_id');
+        // $teams = Team::all();
+        // $teams->makeHidden('creator_id');
+
+        // new TeamResource($team)
+
         return response()->json([
             'status' => 'success',
-            'data' => $teams
+            'data' => TeamResource::collection(Team::all())
         ], 200);
     }
 

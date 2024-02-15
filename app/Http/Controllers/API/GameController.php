@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Game;
 use App\Models\Team;
+use App\Events\GameCreated;
 use Auth;
 
 class GameController extends Controller
@@ -47,6 +48,7 @@ class GameController extends Controller
         $game->queue_type = $request->input('queue_type');
         $game->team_id_2 = $request->input('team_id_2');
         $game->save();
+        event(new GameCreated($game));
 
         return response()->json([
             'status' => 'success',

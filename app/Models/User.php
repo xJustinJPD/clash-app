@@ -79,7 +79,7 @@ class User extends Authenticatable
     }
     public function gameStats()
     {
-        return $this->hasMany(UserTeamGameStat::class);
+        return $this->hasMany(UserTeamGameStats::class);
     }
     
     
