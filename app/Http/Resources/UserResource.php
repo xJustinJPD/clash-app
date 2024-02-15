@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Http\Resources\RoleResource;
 class UserResource extends JsonResource
 {
     /**
@@ -14,19 +14,30 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // return parent::toArray($request);
+        $totalGames = $this->wins + $this->losses;
+        $ratio = ($totalGames != 0) ? intval($this->wins / $totalGames * 100) : 0;
+        $total = $this->kills + $this->deaths;
+        $kdRatio = ($total != 0) ? intval($this->kills / $total * 100) : 0;
 
+        $includeRoles = $request->routeIs('users.index') || $request->routeIs('users.show');
         return [
-            "id": $this->id,
-            "username": $this->username,
-            "email": $this->email,
-            "description": $this->description,
-            "kills": $this->kills,
-            "deaths":$this->deaths,
-            "rank": $this->rank,
-            "image": $this->image,
-            "wins": $this->wins,
-            "losses": $this->losses,
+            "id" =>  $this->id,
+            "username"=> $this->username,
+            "email"=> $this->email,
+            "description"=> $this->description,
+            "kills"=> $this->kills,
+            "deaths"=>$this->deaths,
+            "rank"=> $this->rank,
+            "image"=> $this->image,
+            "wins"=> $this->wins,
+            "losses"=> $this->losses,
+            $this->when($includeRoles, function () {
+                return [
+                    'roles' => RoleResource::collection($this->roles),
+                ];
+            }),
+            'user-win-ratio' => $ratio,
+            'user-kd-ratio' => $kdRatio,
         ];
     }
 }

@@ -11,24 +11,27 @@ class TeamResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
+     * @param Request $request
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
-        // return parent::toArray($request);
+        // Calculate ratio
+        $totalGames = $this->wins + $this->losses;
+        $ratio = ($totalGames != 0) ? intval($this->wins / $totalGames * 100) : 0;
 
         return [
             'id' => $this->id,
-			'name' => $this->name,
-			'size' => $this->size,
-			'image' => $this->image,
-			'wins' => $this->wins,
-			'losses' => $this->losses,
+            'name' => $this->name,
+            'size' => $this->size,
+            'image' => $this->image,
+            'wins' => $this->wins,
+            'losses' => $this->losses,
             'users' => UserResource::collection($this->users),
-            // 'ratio' => ($this->wins/$this->loses)*100,
-			// 'creator' =>$this->creator,
-			'created_at' => $this->created_at,
-			'updated_at' => $this->updated_at,
+            'team-win-ratio' => $ratio,
+            // 'creator' =>$this->creator_id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

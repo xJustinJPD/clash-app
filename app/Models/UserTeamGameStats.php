@@ -25,5 +25,18 @@ class UserTeamGameStats extends Model
     {
         return $this->belongsTo(Team::class);
     }
+    public function teamCreator()
+{
+    $team = $this->team;
+
+    // Check if the team or its creator is null
+    if ($team === null || $team->creator_id === null) {
+        return null;
+    }
+    
+    // Access the ID of the creator of the team
+    return $team->creator_id;
+}
+
 }
 

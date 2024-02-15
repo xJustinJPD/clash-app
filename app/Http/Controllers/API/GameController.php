@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Game;
 use App\Models\Team;
+use App\Http\Resources\GameResource;
 use App\Events\GameCreated;
 use Auth;
 
@@ -21,12 +22,13 @@ class GameController extends Controller
             ], 401);
         }
 
-        $games = Game::with(['team1', 'team2'])->get();
+        // $games = Game::with(['team1', 'team2'])->get();
         return response()->json([
             'status' => 'success',
-            'data' => $games
+            'data' => GameResource::collection(Game::all())
         ], 200);
     }
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -56,6 +58,30 @@ class GameController extends Controller
             'data' => $game
         ], 201);
     }
+    public function show($id)
+    {
+        $game = Game::find($id);
+
+        if ($game === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Game not found.',
+            ], 404);
+        }
+
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not logged in.'
+            ], 401);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => new GameResource($game),
+        ], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $game = Game::findOrFail($id);
@@ -67,6 +93,12 @@ class GameController extends Controller
             ], 404);
         }
     
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not logged in.'
+            ], 401);
+        }
         
         $user = Auth::user();
         $team1 = $game->team1;

@@ -56,7 +56,7 @@ class TeamController extends Controller
             $image->move(public_path('images'), $imageName);
         }
     
-        // Instantiate the Team model
+    
         $team = new Team();
         $team->name = $request->input('name');
         $team->size = $request->input('size');
@@ -75,16 +75,18 @@ class TeamController extends Controller
 
     public function show($id)
     {
-        $team = Team::with('users')->find($id);
-
+        $team = Team::find($id);
+    
         if ($team === null) {
             $statusMsg = 'Team not found!';
             $statusCode = 404;
         } else {
             $statusMsg = 'success';
             $statusCode = 200;
+            $team->makeHidden('creator_id');
+            $team = new TeamResource($team);
         }
-        $team->makeHidden('creator_id');
+    
         return response()->json([
             'status' => $statusMsg,
             'data' => $team

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Role;
+use App\Http\Resources\UserResource;
 use Auth;
 
 class AuthController extends Controller
@@ -22,7 +23,7 @@ class AuthController extends Controller
 
 
             if ($validator->fails()) {
-                // create the JSON that will be returned in the response
+                
                 return response()->json(
                 [
                     'status' => 'Error',
@@ -32,14 +33,14 @@ class AuthController extends Controller
                 422);
             }
 
-            // If you get this far, validation passed, so create the user in the database.
+           
             $user = User::create(
             [
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => bcrypt($request->password)
             ]);
-             // Assign the 'customer' role to the user
+             
             $defaultRole = Role::where('name', 'customer')->first();
             if ($defaultRole) {
             $user->roles()->attach($defaultRole);
@@ -113,12 +114,12 @@ class AuthController extends Controller
         // unset($user["kills"]);
 
         
-        $user->load('roles:id,name');
-       $user->roles->makeHidden('pivot');
+    //     $user->load('roles:id,name');
+    //    $user->roles->makeHidden('pivot');
         
         
         return response()->json([
-            'user'=> $user,
+            'user'=>  new UserResource($user),
         ],200);
     }
 

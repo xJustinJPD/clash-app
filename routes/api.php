@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\GameController;
+use App\Http\Controllers\API\UserTeamGameStatsController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,9 +43,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //games routes
     Route::get('/games', [GameController::class, 'index']);
+    Route::get('/games/{id}', [GameController::class, 'show']);
     Route::post('/games', [GameController::class, 'store']);
     Route::put('/games/{id}', [GameController::class, 'update']);
     Route::put('/games/{id}/cancel', [GameController::class, 'cancel']);
+
+    //user game stats
+    Route::get('/stats', [UserTeamGameStatsController::class, 'index']);
+    Route::post('/stats', [UserTeamGameStatsController::class, 'store']);
+    Route::get('/stats/{id}', [UserTeamGameStatsController::class, 'show']);
+    Route::put('/stats/{id}', [UserTeamGameStatsController::class, 'update']);
+    Route::delete('/stats/{id}', [UserTeamGameStatsController::class, 'destroy']);
 });
 
 
