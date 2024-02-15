@@ -33,10 +33,9 @@ class GameController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'team_id_1' => 'required|exists:teams,id',
-            'team_id_2' => 'required|exists:teams,id',
             'queue_type' => 'required|in:1v1,2v2,3v3,4v4',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -44,20 +43,58 @@ class GameController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
+    
+        $teamId1 = $request->input('team_id_1');
+        $queueType = $request->input('queue_type');
+    
+        $ongoingGame = Game::where(function ($query) use ($teamId1) {
+                $query->where('team_id_1', $teamId1)
+                      ->orWhere('team_id_2', $teamId1);
+            })
+            ->whereIn('status', ['pending', 'accepted'])
+            ->orderByDesc('created_at')
+            ->first();
+    
+            if ($ongoingGame && !in_array($ongoingGame->status, ['finished', 'cancelled'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are still in a game. Contact Customer Service to resolve the problem'
+                ], 400);
+            }
+            
+    
+        $pendingGame = Game::whereNull('team_id_2')
+                           ->where('status', 'pending')
+                           ->orderBy('created_at')
+                           ->first();
+    
+        if ($pendingGame) {
+            $pendingGame->team_id_2 = (int) $teamId1;
+            $pendingGame->status = 'accepted';
+            $pendingGame->save();
+            event(new GameCreated($pendingGame));
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Joined a game.',
+                'data' => $pendingGame
+            ], 200);
+        }
+    
         $game = new Game();
-        $game->team_id_1 = $request->input('team_id_1');
-        $game->queue_type = $request->input('queue_type');
-        $game->team_id_2 = $request->input('team_id_2');
+        $game->team_id_1 = $teamId1;
+        $game->queue_type = $queueType;
+        $game->status = 'pending';
         $game->save();
-        event(new GameCreated($game));
-
+    
         return response()->json([
             'status' => 'success',
-            'message' => 'Game created successfully.',
+            'message' => 'Waiting for opponent to join',
             'data' => $game
         ], 201);
     }
+    
+    
+
     public function show($id)
     {
         $game = Game::find($id);
