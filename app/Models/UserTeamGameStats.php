@@ -29,14 +29,24 @@ class UserTeamGameStats extends Model
 {
     $team = $this->team;
 
-    // Check if the team or its creator is null
+  
     if ($team === null || $team->creator_id === null) {
         return null;
     }
     
-    // Access the ID of the creator of the team
+ 
     return $team->creator_id;
 }
+protected static function booted()
+    {
+        static::saved(function ($userTeamGameStats) {
+            $user = $userTeamGameStats->user;
+            $user->kills = $user->gameStats->sum('kills');
+            $user->deaths = $user->gameStats->sum('deaths');
+            $user->save();
+        });
+    }
+    
 
 }
 

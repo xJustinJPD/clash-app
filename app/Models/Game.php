@@ -31,5 +31,27 @@ class Game extends Model
     {
         return $this->hasMany(UserTeamGameStats::class);
     }
-    
+    //This is a method provided by Laravel's Eloquent model
+    protected static function booted()
+    {
+        //anonymous function that will be called when a Game is saved.
+        static::saved(function ($game) {
+            if ($game->status === 'finished') {
+                $team1 = $game->team1;
+                $team2 = $game->team2;
+
+                if ($game->team_1_score > $game->team_2_score) {
+                    $team1->wins += 1;
+                    $team1->save();
+                    $team2->losses += 1;
+                    $team2->save();
+                } elseif ($game->team_2_score > $game->team_1_score) {
+                    $team2->wins += 1;
+                    $team2->save();
+                    $team1->losses += 1;
+                    $team1->save();
+                }
+            }
+        });
+    }
 }
