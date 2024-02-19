@@ -16,8 +16,8 @@ class UserResource extends JsonResource
     {
         $totalGames = $this->wins + $this->losses;
         $ratio = ($totalGames != 0) ? intval($this->wins / $totalGames * 100) : 0;
-        $total = $this->kills + $this->deaths;
-        $kdRatio = ($total != 0) ? intval($this->kills / $total * 100) : 0;
+        
+        $kdRatio = ($this->deaths != 0) ? ($this->kills / $this->deaths) : $this->kills;
 
         $includeRoles = $request->routeIs('users.index') || $request->routeIs('users.show');
         return [

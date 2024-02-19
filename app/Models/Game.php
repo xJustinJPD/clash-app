@@ -40,18 +40,46 @@ class Game extends Model
                 $team1 = $game->team1;
                 $team2 = $game->team2;
 
-                if ($game->team_1_score > $game->team_2_score) {
+                if ($game->team_1_result === true) {
                     $team1->wins += 1;
                     $team1->save();
                     $team2->losses += 1;
                     $team2->save();
-                } elseif ($game->team_2_score > $game->team_1_score) {
+                } elseif ($game->team_2_result === true) {
                     $team2->wins += 1;
                     $team2->save();
                     $team1->losses += 1;
                     $team1->save();
                 }
+
+                $game->gameStats->each(function ($stat) use ($game) {
+                    $user = $stat->user;
+                    $team = $stat->team;
+    
+                    // Check if the user's team is part of the game
+                    if ($team->id === $game->team_id_1 || $team->id === $game->team_id_2) {
+                        if ($team->id === $game->team_id_1) {
+                            if ($game->team_1_result === true) {
+                                $user->wins += 1;
+                            } else {
+                                $user->losses += 1;
+                            }
+                        } elseif ($team->id === $game->team_id_2) {
+                            if ($game->team_2_result === true) {
+                                $user->wins += 1;
+                            } else {
+                                $user->losses += 1;
+                            }
+                        }
+                        $user->save();
+                    }
+                });
             }
         });
+        //this code is adding a loss to a team 
+            
+            
+        
+        
     }
 }
