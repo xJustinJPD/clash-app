@@ -129,4 +129,25 @@ class AuthController extends Controller
             'message'=>"logged out succesfully"
         ],200);
     }
+    public function viewAllUsers()
+{
+    try {
+        $user = Auth::user();
+
+        // Retrieve all users who are not admins
+        $users = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'admin');
+        })->get();
+
+        return response()->json([
+            'status' => 'Success',
+            'users' => UserResource::collection($users)
+        ], 200);
+    } catch (\Throwable $th) {
+        return response()->json([
+            'status' => 'Error',
+            'message' => $th->getMessage()
+        ], 500);
+    }
+}
 }
