@@ -38,7 +38,7 @@ class TeamController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'size' => 'required|integer|max:5',
+            'size' => 'required|integer|max:4',
         ]);
     
         if ($validator->fails()) {

@@ -167,7 +167,16 @@ class GameController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-    
+        if (Auth::user()->roles->contains('name', 'admin')) {
+            $validator = Validator::make($request->all(), [
+                'team_1_score' => 'nullable|integer|min:0',
+                'team_2_score' => 'nullable|integer|min:0',
+                'team_1_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'team_2_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'team_1_result' => 'nullable|boolean',
+                'team_2_result' => 'nullable|boolean'
+            ]);
+        }
        
         if ($request->has('team_1_score') && $user->id === $team1->creator_id) {
             $game->team_1_score = $request->input('team_1_score');
@@ -184,7 +193,7 @@ class GameController extends Controller
         if ($request->has('team_2_result') && $user->id === $team2->creator_id) {
             $game->team_2_result = $request->input('team_2_result');
         }
-    
+        
         
         if ($request->hasFile('team_1_image') && $user->id === $team1->creator_id) {
             $team1Image = $request->file('team_1_image');
@@ -227,12 +236,13 @@ class GameController extends Controller
         $team1 = $game->team1;
         $team2 = $game->team2;
     
-        if ($user->roles->contains('name', 'admin') || ($user->id === $team1->creator_id) || ($user->id === $team2->creator_id)) {
+        if (($user->id === $team1->creator_id) || ($user->id === $team2->creator_id)) {
+
             if ($user->id === $team1->creator_id) {
                 $game->team_1_result = false;
                 $game->team_2_result = true;
             }
-            if ($user->id === $team2->creator_id) {
+            else if ($user->id === $team2->creator_id) {
                 $game->team_2_result = false;
                 $game->team_1_result = true;
             }

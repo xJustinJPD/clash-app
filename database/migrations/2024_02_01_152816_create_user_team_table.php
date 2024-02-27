@@ -21,7 +21,7 @@ return new class extends Migration
             $table->bigInteger('team_id')->unsigned();
             
 
-        //adds the foreign keys and connects them to the ids from their tables
+       
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('team_id')->references('id')->on('teams')->onUpdate('cascade')->onDelete('restrict');
         });
