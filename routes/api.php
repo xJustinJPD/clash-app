@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/stats/{id}', [UserTeamGameStatsController::class, 'destroy']);
 
     //friend requests
+    //the id of the user you want to send this to
     Route::post('/users/{user}/send-request', [FriendRequestController::class, 'sendRequest'])->name('send-request');
     Route::put('/requests/{requestId}/accept', [AuthController::class, 'acceptRequest'])->name('accept-request');
     Route::put('/requests/{requestId}/reject', [AuthController::class, 'rejectRequest'])->name('reject-request');
@@ -65,7 +66,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/requests/sent', [FriendRequestController::class, 'viewSentRequests'])->name('view-sent-requests');
     Route::get('/requests/received', [FriendRequestController::class, 'viewReceivedRequests'])->name('view-received-requests');
     Route::get('/friends', [AuthController::class, 'getAllFriends'])->name('get-all-friends');
-    Route::delete('/friends/{friendId}', [FriendRequestController::class, 'removeFriend'])->name('remove-friend');
+    //its the id of the other user not the id of the table
+    Route::delete('/friends/{id}', [FriendRequestController::class, 'removeFriend'])->name('remove-friend');
 
     
 

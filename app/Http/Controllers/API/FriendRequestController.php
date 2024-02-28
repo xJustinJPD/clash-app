@@ -58,19 +58,35 @@ class FriendRequestController extends Controller
     }
 
 
-    public function removeFriend(Request $request, $friendId)
-{
-    try {
-        $user = $request->user(); 
-
-        // Detach the friend relationship
-        $user->friends()->detach($friendId);
-
-        return response()->json([
-            'message' => 'Friend removed successfully.',
-        ], 200);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Failed to remove friend.'], 500);
+    public function removeFriend(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+    
+            // Find the friendship record
+            $friendship = Friend::where(function ($query) use ($id, $user) {
+                $query->where('user_id', $user->id)
+                    ->where('friend_id', $id);
+            })->orWhere(function ($query) use ($id, $user) {
+                $query->where('user_id', $id)
+                    ->where('friend_id', $user->id);
+            })->first();
+    
+            if (!$friendship) {
+                return response()->json(['message' => 'Friendship not found.'], 404);
+            }
+    
+            // Detach both users from the friendship
+            $user->friends()->detach($id);
+            $user->friends()->detach($user->id);
+    
+            // Delete the friendship record
+            $friendship->delete();
+    
+            return response()->json(['message' => 'Friendship removed successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to remove friendship.'], 500);
+        }
     }
-}
+    
 }
