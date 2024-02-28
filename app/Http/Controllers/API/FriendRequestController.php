@@ -20,7 +20,7 @@ class FriendRequestController extends Controller
     public function viewSentRequests(Request $request)
     {
         try {
-            // Retrieve the authenticated user
+          
             $user = $request->user();
     
             // Retrieve all friend requests where the user is the sender (user_id)
@@ -40,7 +40,7 @@ class FriendRequestController extends Controller
     public function viewReceivedRequests(Request $request)
     {
         try {
-            // Retrieve the authenticated user
+            
             $user = $request->user();
     
             // Retrieve all friend requests where the user is the recipient (friend_id)
@@ -61,7 +61,7 @@ class FriendRequestController extends Controller
     try {
         $user = $request->user(); 
         
-        // Retrieve all friends of the authenticated user
+        
         $friends = $user->getAllFriends();
 
         return response()->json([
@@ -78,7 +78,7 @@ class FriendRequestController extends Controller
         try {
             $user = $request->user();
     
-            // Find the friendship record
+            //filter between if the current users id is equal to friend or user then remove the current id of that friend
             $friendship = Friend::where(function ($query) use ($id, $user) {
                 $query->where('user_id', $user->id)
                     ->where('friend_id', $id);
@@ -95,7 +95,7 @@ class FriendRequestController extends Controller
             $user->friends()->detach($id);
             $user->friends()->detach($user->id);
     
-            // Delete the friendship record
+            // Delete the friendship
             $friendship->delete();
     
             return response()->json(['message' => 'Friendship removed successfully.'], 200);

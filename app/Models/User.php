@@ -100,7 +100,8 @@ class User extends Authenticatable
     public function getAllFriends()
     {
         $userId = $this->id;
-    
+        
+        //search each friend which is associated through the user then remove any data from the current user to avoid repetition.
         $friends = Friend::where('status', 'accepted')
             ->where(function ($query) use ($userId) {
                 $query->where('user_id', $userId)
