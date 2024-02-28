@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
@@ -95,5 +96,27 @@ class User extends Authenticatable
     {
         return $this->hasMany(Friend::class, 'friend_id')->where('status', 'pending');
     }
-   
+    
+    public function getAllFriends()
+    {
+        $userId = $this->id;
+    
+        $friends = Friend::where('status', 'accepted')
+            ->where(function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhere('friend_id', $userId);
+            })
+            ->with(['user' => function ($query) use ($userId) {
+                $query->where('id', '!=', $userId);
+            }, 'friend' => function ($query) use ($userId) {
+                $query->where('id', '!=', $userId);
+            }])
+            ->get();
+    
+        return $friends;
+    }
+    
 }
+
+   
+

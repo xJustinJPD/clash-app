@@ -13,7 +13,7 @@ class FriendRequestController extends Controller
 {
     public function sendRequest(Request $request, User $user)
     {
-        auth()->user()->friends()->attach($user->id, ['status' => 'pending']);
+        auth()->user()->friends()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
         return response()->json(['message' => 'Friend request sent.'], 200);
     }
 
@@ -56,7 +56,22 @@ class FriendRequestController extends Controller
             return response()->json(['message' => 'Failed to retrieve received friend requests.'], 500);
         }
     }
+    public function getAllFriends(Request $request)
+{
+    try {
+        $user = $request->user(); 
+        
+        // Retrieve all friends of the authenticated user
+        $friends = $user->getAllFriends();
 
+        return response()->json([
+            'message' => 'Friends retrieved successfully.',
+            'friends' => $friends,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Failed to retrieve friends.'], 500);
+    }
+}
 
     public function removeFriend(Request $request, $id)
     {

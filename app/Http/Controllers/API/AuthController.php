@@ -175,20 +175,5 @@ public function rejectRequest(Request $request, $requestId)
         }
         
     }
-    public function getAllFriends(Request $request)
-    {
-        try {
-            $user = $request->user(); 
-            
-            // Retrieve friends where the status is 'accepted'
-            $friends = $user->friends()->wherePivot('status', 'accepted')->get();
-    
-            return response()->json([
-                'message' => 'Friends retrieved successfully.',
-                'friends' => $friends,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to retrieve friends.'], 500);
-        }
-    }
+   
 }

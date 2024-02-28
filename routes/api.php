@@ -65,7 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/requests/{requestId}/reject', [AuthController::class, 'rejectRequest'])->name('reject-request');
     Route::get('/requests/sent', [FriendRequestController::class, 'viewSentRequests'])->name('view-sent-requests');
     Route::get('/requests/received', [FriendRequestController::class, 'viewReceivedRequests'])->name('view-received-requests');
-    Route::get('/friends', [AuthController::class, 'getAllFriends'])->name('get-all-friends');
+    //this is still only showing the users in the user_id 
+    Route::get('/friends', [FriendRequestController::class, 'getAllFriends'])->name('get-all-friends');
     //its the id of the other user not the id of the table
     Route::delete('/friends/{id}', [FriendRequestController::class, 'removeFriend'])->name('remove-friend');
 
