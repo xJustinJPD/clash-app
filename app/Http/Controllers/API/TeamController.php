@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\TeamResource;
+use App\Http\Resources\Teams\TeamResource;
 
 class TeamController extends Controller
 {

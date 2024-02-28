@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Teams;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-class UserResource extends JsonResource
+class UserTeamResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,11 +18,10 @@ class UserResource extends JsonResource
         
         $kdRatio = ($this->deaths != 0) ? ($this->kills / $this->deaths) : $this->kills;
 
+        $includeRoles = $request->routeIs('users.index') || $request->routeIs('users.show');
         return [
             "id" =>  $this->id,
             "username"=> $this->username,
-            "email"=> $this->email,
-            "description"=> $this->description,
             "kills"=> $this->kills,
             "deaths"=>$this->deaths,
             "rank"=> $this->rank,

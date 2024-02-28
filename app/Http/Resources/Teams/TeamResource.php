@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Teams;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Teams\UserTeamResource;
 
-class TeamGameResource extends JsonResource
+class TeamResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -27,6 +27,7 @@ class TeamGameResource extends JsonResource
             'image' => $this->image,
             'wins' => $this->wins,
             'losses' => $this->losses,
+            'users' => UserTeamResource::collection($this->users),
             'team-win-ratio' => $ratio,
             // 'creator' =>$this->creator_id,
             'created_at' => $this->created_at,

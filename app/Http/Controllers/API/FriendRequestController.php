@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Friend;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Friends\FriendResource;
 use Auth;
 
 class FriendRequestController extends Controller
@@ -66,7 +67,8 @@ class FriendRequestController extends Controller
 
         return response()->json([
             'message' => 'Friends retrieved successfully.',
-            'friends' => $friends,
+            // 'friends' => $friends,
+            'friends' => FriendResource::collection($friends),
         ], 200);
     } catch (\Exception $e) {
         return response()->json(['message' => 'Failed to retrieve friends.'], 500);

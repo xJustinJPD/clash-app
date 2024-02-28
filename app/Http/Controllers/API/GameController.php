@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Game;
 use App\Models\Team;
-use App\Http\Resources\GameResource;
+use App\Http\Resources\Games\GameResource;
 use App\Events\GameCreated;
 use Auth;
 
