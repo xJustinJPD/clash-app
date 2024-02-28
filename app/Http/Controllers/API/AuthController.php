@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Friend;
 use App\Http\Resources\UserResource;
 use Auth;
 
@@ -150,4 +151,44 @@ class AuthController extends Controller
         ], 500);
     }
 }
+public function acceptRequest(Request $request, $requestId)
+{
+    try {
+        $friendRequest = Friend::findOrFail($requestId);
+        $friendRequest->update(['status' => 'accepted']);
+
+        return response()->json(['message' => 'Friend request accepted.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Failed to accept friend request.'], 500);
+    }
+
+}
+public function rejectRequest(Request $request, $requestId)
+    {
+        try {
+            $friendRequest = Friend::findOrFail($requestId);
+            $friendRequest->update(['status' => 'rejected']);
+
+            return response()->json(['message' => 'Friend request rejected.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to reject friend request.'], 500);
+        }
+        
+    }
+    public function getAllFriends(Request $request)
+    {
+        try {
+            $user = $request->user(); 
+            
+            // Retrieve friends where the status is 'accepted'
+            $friends = $user->friends()->wherePivot('status', 'accepted')->get();
+    
+            return response()->json([
+                'message' => 'Friends retrieved successfully.',
+                'friends' => $friends,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to retrieve friends.'], 500);
+        }
+    }
 }

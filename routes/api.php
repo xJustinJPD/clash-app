@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\GameController;
 use App\Http\Controllers\API\UserTeamGameStatsController;
+use App\Http\Controllers\API\FriendRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stats/{id}', [UserTeamGameStatsController::class, 'show']);
     Route::put('/stats/{id}', [UserTeamGameStatsController::class, 'update']);
     Route::delete('/stats/{id}', [UserTeamGameStatsController::class, 'destroy']);
+
+    //friend requests
+    Route::post('/users/{user}/send-request', [FriendRequestController::class, 'sendRequest'])->name('send-request');
+    Route::put('/requests/{requestId}/accept', [AuthController::class, 'acceptRequest'])->name('accept-request');
+    Route::put('/requests/{requestId}/reject', [AuthController::class, 'rejectRequest'])->name('reject-request');
+    Route::put('/requests/{requestId}/reject', [AuthController::class, 'rejectRequest'])->name('reject-request');
+    Route::get('/requests/sent', [FriendRequestController::class, 'viewSentRequests'])->name('view-sent-requests');
+    Route::get('/requests/received', [FriendRequestController::class, 'viewReceivedRequests'])->name('view-received-requests');
+    Route::get('/friends', [AuthController::class, 'getAllFriends'])->name('get-all-friends');
+    Route::delete('/friends/{friendId}', [FriendRequestController::class, 'removeFriend'])->name('remove-friend');
+
+    
+
 });
 
 

@@ -82,6 +82,18 @@ class User extends Authenticatable
         return $this->hasMany(UserTeamGameStats::class);
     }
     
-    
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+                    ->orWhere(function ($query) {
+                        $query->where('friend_id', $this->id);
+                    })
+                    ->withPivot('status');
+    }
+
+    public function friendRequests()
+    {
+        return $this->hasMany(Friend::class, 'friend_id')->where('status', 'pending');
+    }
    
 }
