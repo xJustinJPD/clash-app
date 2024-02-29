@@ -122,7 +122,7 @@ class UserTeamGameStatsController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'UserTeamGameStats updated successfully.',
-            'data' => $userTeamGameStats
+            'data' => new UserTeamGameStatsResource($userTeamGameStats)
         ], 200);
     }
     

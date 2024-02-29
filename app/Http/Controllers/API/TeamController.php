@@ -69,7 +69,7 @@ class TeamController extends Controller
     
         return response()->json([
             'status' => 'success',
-            'data' => $team
+            'data' => new TeamResource($team)
         ], 200);
     }
 
@@ -146,7 +146,7 @@ class TeamController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $team
+            'data' => new TeamResource($team)
         ], 200);
     }
 

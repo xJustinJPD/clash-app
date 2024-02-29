@@ -89,7 +89,7 @@ class GameController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Waiting for opponent to join',
-            'data' => $game
+            'data' => new GameResource($game)
         ], 201);
     }
     
@@ -216,7 +216,7 @@ class GameController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Game results updated successfully.',
-            'data' => $game
+            'data' => new GameResource($game)
         ], 200);
 
     }
@@ -253,7 +253,7 @@ class GameController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Game cancelled successfully.',
-                'data' => $game
+                'data' => new GameResource($game)
             ], 200);
         } else {
             return response()->json([

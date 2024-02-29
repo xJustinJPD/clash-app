@@ -133,12 +133,7 @@ class AuthController extends Controller
     public function viewAllUsers()
 {
     try {
-        $user = Auth::user();
-
-        // Retrieve all users who are not admins
-        $users = User::whereDoesntHave('roles', function ($query) {
-            $query->where('name', 'admin');
-        })->get();
+        $users = User::all();
 
         return response()->json([
             'status' => 'Success',
@@ -155,25 +150,36 @@ public function acceptRequest(Request $request, $requestId)
 {
     try {
         $friendRequest = Friend::findOrFail($requestId);
+
+        if ($friendRequest->friend_id !== auth()->id()) {
+            return response()->json(['message' => 'You are not authorized to accept this friend request.'], 403);
+        }
+
         $friendRequest->update(['status' => 'accepted']);
 
         return response()->json(['message' => 'Friend request accepted.'], 200);
     } catch (\Exception $e) {
         return response()->json(['message' => 'Failed to accept friend request.'], 500);
     }
-
 }
-public function rejectRequest(Request $request, $requestId)
-    {
-        try {
-            $friendRequest = Friend::findOrFail($requestId);
-            $friendRequest->update(['status' => 'rejected']);
 
-            return response()->json(['message' => 'Friend request rejected.'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to reject friend request.'], 500);
+public function rejectRequest(Request $request, $requestId)
+{
+    try {
+        $friendRequest = Friend::findOrFail($requestId);
+
+        // Check if the authenticated user is the recipient of the friend request
+        if ($friendRequest->friend_id !== auth()->id()) {
+            return response()->json(['message' => 'You are not authorized to reject this friend request.'], 403);
         }
-        
+
+        $friendRequest->update(['status' => 'rejected']);
+
+        return response()->json(['message' => 'Friend request rejected.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Failed to reject friend request.'], 500);
     }
+}
+
    
 }

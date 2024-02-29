@@ -13,10 +13,17 @@ use Auth;
 class FriendRequestController extends Controller
 {
     public function sendRequest(Request $request, User $user)
-    {
-        auth()->user()->friends()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
-        return response()->json(['message' => 'Friend request sent.'], 200);
+{
+   
+    if ($user->id === auth()->id()) {
+        return response()->json(['message' => 'You cannot send a friend request to yourself.'], 400);
     }
+
+    
+    auth()->user()->friends()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
+    
+    return response()->json(['message' => 'Friend request sent.'], 200);
+}
 
     public function viewSentRequests(Request $request)
     {
@@ -97,7 +104,7 @@ class FriendRequestController extends Controller
             $user->friends()->detach($id);
             $user->friends()->detach($user->id);
     
-            // Delete the friendship
+            
             $friendship->delete();
     
             return response()->json(['message' => 'Friendship removed successfully.'], 200);
