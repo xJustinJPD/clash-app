@@ -91,10 +91,14 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
             $token = $user->createToken('api-example-salt')->plainTextToken;
 
+            
+
             return response()->json([
                 'status' => 'Success',
                 'message'=>'Welcome back ' . $user->username,
-                'token' => $token
+                'token' => $token,
+                'id' => $user->id,
+                'role' => $user->roles->pluck('name')
             ],200);
         }
         catch(\Throwable $th){
