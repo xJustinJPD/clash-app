@@ -29,7 +29,7 @@ class TeamResource extends JsonResource
             'losses' => $this->losses,
             'users' => UserTeamResource::collection($this->users),
             'team-win-ratio' => $ratio,
-            // 'creator' =>$this->creator_id,
+            'creator' =>$this->creator_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
