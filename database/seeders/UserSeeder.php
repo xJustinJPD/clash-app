@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
 
           $customer = new User();
           $customer->username = 'jpd';
-          $customer->email = 'n00212272@iadt.ie';
+          $customer->email = 'justinperrydoyle@gmail.com';
           $customer->password = Hash::make('password');
           $customer->save();
           //attach the customer role to this user.
