@@ -33,6 +33,26 @@ class TeamController extends Controller
         ], 200);
     }
 
+    public function userTeams()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not logged in.'
+            ], 401);
+        }
+    
+        $user = Auth::user();
+    
+        $teams = $user->teams;
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => $teams
+        ], 200);
+    }
+    
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

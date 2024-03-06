@@ -91,10 +91,14 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
             $token = $user->createToken('api-example-salt')->plainTextToken;
 
+            
+
             return response()->json([
                 'status' => 'Success',
                 'message'=>'Welcome back ' . $user->username,
-                'token' => $token
+                'token' => $token,
+                'id' => $user->id,
+                'role' => $user->roles->pluck('name')
             ],200);
         }
         catch(\Throwable $th){
@@ -131,21 +135,24 @@ class AuthController extends Controller
         ],200);
     }
     public function viewAllUsers()
-{
-    try {
-        $users = User::all();
-
-        return response()->json([
-            'status' => 'Success',
-            'users' => UserResource::collection($users)
-        ], 200);
-    } catch (\Throwable $th) {
-        return response()->json([
-            'status' => 'Error',
-            'message' => $th->getMessage()
-        ], 500);
+    {
+        try {
+            $authUserId = Auth::id();
+    
+            $users = User::where('id', '!=', $authUserId)->get();
+    
+            return response()->json([
+                'status' => 'Success',
+                'users' => UserResource::collection($users)
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
-}
+    
 public function acceptRequest(Request $request, $requestId)
 {
     try {
