@@ -19,8 +19,8 @@ class TeamSeeder extends Seeder
             'name' => 'Example Team 1',
             'size' => 1,
             'image' => 'no_image_available.jpg',
-            'wins' => 5,
-            'losses' => 5,
+            'wins' => 0,
+            'losses' => 0,
             'creator_id' => 1,
         ]);
         $creator1 = User::find(1);
@@ -29,11 +29,11 @@ class TeamSeeder extends Seeder
             'name' => 'Example Team 2',
             'size' => 1,
             'image' => 'no_image_available.jpg',
-            'wins' => 2,
-            'losses' => 4,
-            'creator_id' => 2,
+            'wins' => 0,
+            'losses' => 0,
+            'creator_id' => 3,
         ]);
-        $creator2 = User::find(2);
+        $creator2 = User::find(3);
         $team2->users()->attach($creator2->id);
     }
 }

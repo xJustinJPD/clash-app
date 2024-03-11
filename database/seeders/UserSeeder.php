@@ -29,16 +29,28 @@ class UserSeeder extends Seeder
           $admin->password = Hash::make('password');
           $admin->save();
 
-          // attach the admin role to the user that was created above.
+          $additionalAdmin = new User();
+          $additionalAdmin->username = 'admin_user';
+          $additionalAdmin->email = 'kacper@gmail.com';
+          $additionalAdmin->password = Hash::make('password');
+          $additionalAdmin->save();
+          // attach the admin role to the users
           $admin->roles()->attach($role_admin);
-
+          $additionalAdmin->roles()->attach($role_admin);
 
           $customer = new User();
           $customer->username = 'jpd';
           $customer->email = 'n00212272@iadt.ie';
           $customer->password = Hash::make('password');
           $customer->save();
-          //attach the customer role to this user.
+
+          $additionalCustomer = new User();
+          $additionalCustomer->username = 'customer_user';
+          $additionalCustomer->email = 'kadex@gmail.com';
+          $additionalCustomer->password = Hash::make('password');
+          $additionalCustomer->save();
+          //attach the customer role to users.
           $customer->roles()->attach($role_customer);
+          $additionalCustomer->roles()->attach($role_customer);
     }
 }

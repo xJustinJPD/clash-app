@@ -5,7 +5,7 @@ namespace App\Http\Resources\Stats;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\UserResource;
-use App\Http\Resources\Stats\TeamGameResource;
+use App\Http\Resources\Stats\TeamUserResource;
 use App\Http\Resources\Games\GameResource;
 
 class UserTeamGameStatsResource extends JsonResource
@@ -28,7 +28,7 @@ class UserTeamGameStatsResource extends JsonResource
 			"deaths" => $this->deaths,
 			"created_at" => $this->created_at,
 			"updated_at" => $this->updated_at,
-            // 'user' => new UserResource($this->user),
+            'user' => new UserResource($this->user),
             // 'team' => new TeamGameResource($this->team),
             'game' => new GameResource($this->game),
         ];

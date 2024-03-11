@@ -113,7 +113,7 @@ class AuthController extends Controller
 
 
         $user = Auth::user();
-
+        $user->updateWinsAndLossesFromTeams();
         // unset($user["wins"]);
         // unset($user["loses"]);
         // unset($user["kills"]);
@@ -140,7 +140,9 @@ class AuthController extends Controller
             $authUserId = Auth::id();
     
             $users = User::where('id', '!=', $authUserId)->get();
-    
+            foreach ($users as $user) {
+                $user->updateWinsAndLossesFromTeams();
+            }
             return response()->json([
                 'status' => 'Success',
                 'users' => UserResource::collection($users)
