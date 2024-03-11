@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->integer('kills')->default(0);
             $table->integer('deaths')->default(0);
-            $table->string('rank')->nullable();
+            $table->integer('rank')->default(0);
             $table->string('image')->nullable();
             $table->integer('wins')->default(0); 
             $table->integer('losses')->default(0);

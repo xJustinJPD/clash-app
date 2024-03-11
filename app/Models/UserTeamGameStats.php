@@ -37,16 +37,7 @@ class UserTeamGameStats extends Model
  
     return $team->creator_id;
 }
-protected static function booted()
-    {
-        static::saved(function ($userTeamGameStats) {
-            $user = $userTeamGameStats->user;
-            $user->kills = $user->gameStats->sum('kills');
-            $user->deaths = $user->gameStats->sum('deaths');
-            $user->save();
-        });
-    }
-    
 
 }
+
 

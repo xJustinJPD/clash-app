@@ -28,6 +28,7 @@ class UserTeamResource extends JsonResource
             "image"=> $this->image,
             "wins"=> $this->wins,
             "losses"=> $this->losses,
+            "rank"=> $this->rank,
             'user-win-ratio' => $ratio,
             'user-kd-ratio' => $kdRatio,
         ];

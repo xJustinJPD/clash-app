@@ -27,6 +27,7 @@ class TeamUserResource extends JsonResource
             'image' => $this->image,
             'wins' => $this->wins,
             'losses' => $this->losses,
+            'rank' => $this->rank,
             'users' => UserResource::collection($this->users),
             'team-win-ratio' => $ratio,
             // 'creator' =>$this->creator_id,

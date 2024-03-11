@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use App\Models\Game;
 use App\Models\Team;
 use App\Http\Resources\Games\GameResource;
@@ -210,6 +211,8 @@ class GameController extends Controller
             $team2->image = $team2ImageName;
             $team2->save();
         }
+
+
         $game->status = 'finished';
         $game->save();
     
