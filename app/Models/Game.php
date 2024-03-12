@@ -42,51 +42,52 @@ class Game extends Model
     {
         static::saved(function ($game) {
             if ($game->status === 'finished') {
-                $team1 = $game->team1;
-                $team2 = $game->team2;
-
-                // Check if the game result has been updated before modifying wins and losses.
-                if ($game->isDirty('team_1_result') && $game->team_1_result === true) {
-                    $team1->wins += 1;
-                    $team2->losses += 1;
-                } elseif ($game->isDirty('team_2_result') && $game->team_2_result === true) {
-                    $team2->wins += 1;
-                    $team1->losses += 1;
+                // Update wins and losses for teams
+                if ($game->team_1_result === true) {
+                    $game->team1->wins += 1;
+                    $game->team2->losses += 1;
+                } elseif ($game->team_2_result === true) {
+                    $game->team2->wins += 1;
+                    $game->team1->losses += 1;
                 }
-
+    
                 // Update ranks for teams
                 if ($game->team_1_result === true) {
-                    $team1->rank += 2;
+                    $game->team1->rank += 2;
                 } elseif ($game->team_2_result === true) {
-                    $team2->rank += 2;
-                } elseif ($game->team_1_result === false && $team1->rank > 0) {
-                    $team1->rank -= 1;
-                } elseif ($game->team_2_result === false && $team2->rank > 0) {
-                    $team2->rank -= 1;
+                    $game->team2->rank += 2;
+                } elseif ($game->team_1_result === false && $game->team1->rank > 0) {
+                    $game->team1->rank -= 1;
+                } elseif ($game->team_2_result === false && $game->team2->rank > 0) {
+                    $game->team2->rank -= 1;
                 }
+    
+                // Save changes to teams
+                $game->team1->save();
+                $game->team2->save();
+    
+                // Update wins, losses, and ranks for users associated with each team
 
-                $team1->save();
-                $team2->save();
-                    // Update ranks for users associated with the game
-            $game->gameStats->each(function ($stat) use ($game) {
-                $user = $stat->user;
+                $game->team1->users->each(function ($user) use ($game) {
 
-                // Check if the user's team is part of the game
-                if ($user->team_id === $game->team_id_1 || $user->team_id === $game->team_id_2) {
-                    if (($game->team_id_1 === $user->team_id && $game->team_1_result === true) ||
-                        ($game->team_id_2 === $user->team_id && $game->team_2_result === true)) {
-                        $user->rank += 2; // Increment rank for a win
-                    } elseif (($game->team_id_1 === $user->team_id && $game->team_1_result === false) ||
-                        ($game->team_id_2 === $user->team_id && $game->team_2_result === false)) {
-                        if ($user->rank > 0) {
-                            $user->rank -= 1; // Decrement rank for a loss, but keep it above 0
-                        }
-                    }
-
+                    // dd($user, $game);
+                    $user->wins += $game->team_1_result ? 1 : 0;
+                    $user->losses += $game->team_1_result ? 0 : 1;
+                    $user->rank += $game->team_1_result ? 2 : ($user->rank > 0 ? -1 : 0);
                     $user->save();
-                    }
+
+                });
+
+    
+                $game->team2->users->each(function ($user) use ($game) {
+                    
+                        $user->wins += $game->team_2_result ? 1 : 0;
+                        $user->losses += $game->team_2_result ? 0 : 1;
+                        $user->rank += $game->team_2_result ? 2 : ($user->rank > 0 ? -1 : 0);
+                        $user->save();
+                    
                 });
             }
         });
     }
-}
+}    

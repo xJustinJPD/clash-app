@@ -118,21 +118,7 @@ class User extends Authenticatable
     
         return $friends;
     }
-    public function updateWinsAndLossesFromTeams()
-{
-    $teams = $this->teams()->get();
-    $totalWins = 0;
-    $totalLosses = 0;
-
-    foreach ($teams as $team) {
-        $totalWins += $team->wins;
-        $totalLosses += $team->losses;
-    }
-
-    $this->wins = $totalWins;
-    $this->losses = $totalLosses;
-    $this->save();
-}
+ 
 
 }
 
