@@ -26,6 +26,7 @@ class TeamGameResource extends JsonResource
             'image' => $this->image,
             'wins' => $this->wins,
             'rank' => $this->rank,
+            'creator' => $this->creator_id,
             'losses' => $this->losses,
             'team-win-ratio' => $ratio,
             
