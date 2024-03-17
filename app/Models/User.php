@@ -118,7 +118,40 @@ class User extends Authenticatable
     
         return $friends;
     }
- 
+
+    public function userTeam()
+    {
+        return $this->belongsToMany(User::class, 'teams', 'user_id', 'team_id')
+                    ->orWhere(function ($query) {
+                        $query->where('team_id', $this->id);
+                    })
+                    ->withPivot('status');
+    }
+
+    public function teamRequests()
+    {
+        return $this->hasMany(UserTeam::class, 'team_id')->where('status', 'pending');
+    }
+    
+    public function getAllTeams()
+    {
+        $userId = $this->id;
+        
+        //search each friend which is associated through the user then remove any data from the current user to avoid repetition.
+        $teams = Team::where('status', 'accepted')
+            ->where(function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhere('team_id', $userId);
+            })
+            ->with(['user' => function ($query) use ($userId) {
+                $query->where('id', '!=', $userId);
+            }, 'team' => function ($query) use ($userId) {
+                $query->where('id', '!=', $userId);
+            }])
+            ->get();
+    
+        return $teams;
+    }
 
 }
 
