@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::get('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/user/all', [AuthController::class, 'viewAllUsers']);
+    Route::get('/user/{id}', [AuthController::class, 'showUser']);
+
     
     // Team routes
     Route::get('/teams', [TeamController::class, 'index']);

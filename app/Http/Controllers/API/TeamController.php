@@ -58,7 +58,7 @@ class TeamController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'size' => 'required|integer|max:4',
+            'size' => 'required|integer|max:5',
         ]);
     
         if ($validator->fails()) {
@@ -124,14 +124,14 @@ class TeamController extends Controller
             ], 404);
         }
 
-        if (Auth::user()->roles->contains('name', 'admin')) {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:50',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'wins' => 'integer',
-                'losses' => 'integer'
-            ]);
-        } else {
+        // if (Auth::user()->roles->contains('name', 'admin')) {
+        //     $validator = Validator::make($request->all(), [
+        //         'name' => 'required|string|max:50',
+        //         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //         'wins' => 'integer',
+        //         'losses' => 'integer'
+        //     ]);
+        // } else {
             if ($team->creator_id !== Auth::id()) {
                 return response()->json([
                     'status' => 'Error',
@@ -144,7 +144,7 @@ class TeamController extends Controller
                 'size' => 'required|integer|max:5',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-        }
+        // }
 
         if ($validator->fails()) {
             return response()->json([
@@ -153,17 +153,17 @@ class TeamController extends Controller
             ], 422);
         }
 
-        $team->name = $request->input('name');
-        $team->size = $request->input('size');
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('images'), $imageName);
-            $team->image = $imageName;
         }
 
+        $team->name = $request->input('name');
+        $team->size = $request->input('size');
+        $team->image = $imageName;
         $team->save();
-
         return response()->json([
             'status' => 'success',
             'data' => new TeamResource($team)
@@ -221,7 +221,6 @@ class TeamController extends Controller
             ], 404);
         }
 
-   
         if ($team->size !== null && $team->users->count() >= $team->size) {
             return response()->json([
                 'status' => 'error',
