@@ -26,12 +26,14 @@ class UserSeeder extends Seeder
           $admin = new User();
           $admin->username = 'kapper';
           $admin->email = 'kacper.agatowski75@gmail.com';
+          $admin->image = 'no_image_available.jpg';
           $admin->password = Hash::make('password');
           $admin->save();
 
           $additionalAdmin = new User();
           $additionalAdmin->username = 'admin_user';
           $additionalAdmin->email = 'kacper@gmail.com';
+          $additionalAdmin->image = 'no_image_available.jpg';
           $additionalAdmin->password = Hash::make('password');
           $additionalAdmin->save();
           // attach the admin role to the users
@@ -41,12 +43,14 @@ class UserSeeder extends Seeder
           $customer = new User();
           $customer->username = 'jpd';
           $customer->email = 'justinperrydoyle@gmail.com';
+          $customer->image = 'no_image_available.jpg';
           $customer->password = Hash::make('password');
           $customer->save();
 
           $additionalCustomer = new User();
           $additionalCustomer->username = 'customer_user';
           $additionalCustomer->email = 'kadex@gmail.com';
+          $additionalCustomer->image = 'no_image_available.jpg';
           $additionalCustomer->password = Hash::make('password');
           $additionalCustomer->save();
           //attach the customer role to users.
