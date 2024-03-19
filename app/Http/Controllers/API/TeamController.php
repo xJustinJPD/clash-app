@@ -152,13 +152,8 @@ class TeamController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-<<<<<<< HEAD
-        
-    
-=======
 
 
->>>>>>> justin
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time().'.'.$image->getClientOriginalExtension();

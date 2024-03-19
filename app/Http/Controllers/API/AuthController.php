@@ -154,6 +154,8 @@ class AuthController extends Controller
             'message'=>"logged out succesfully"
         ],200);
     }
+
+    
     public function viewAllUsers()
     {
         try {
