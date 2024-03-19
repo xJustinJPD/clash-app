@@ -316,7 +316,7 @@ class TeamController extends Controller
         }
     }
 
-    public function inviteUser(Request $request, $teamId)
+    public function inviteUser(Request $request, $teamId, User $user)
     {
         $creatorId = Auth::id();
         $team = Team::find($teamId);
@@ -377,6 +377,7 @@ class TeamController extends Controller
             ], 400);
         }
     
+        // $team->users()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
         $team->users()->attach($user->id);
     
         return response()->json([
@@ -384,5 +385,22 @@ class TeamController extends Controller
             'message' => 'User invited to the team successfully.'
         ], 200);
     }
+
+    // public function acceptInvite(Request $request, $teamId)
+    // {
+        
+    //     {
+    //         try {
+    //             $teamRequest = Team::findOrFail($requestId);
+
+        
+    //             $teamRequest->update(['status' => 'accepted']);
+        
+    //             return response()->json(['message' => 'Team request accepted.'], 200);
+    //         } catch (\Exception $e) {
+    //             return response()->json(['message' => 'Failed to accept Team request.'], 500);
+    //         }
+    //     }
+    // }
     
 }

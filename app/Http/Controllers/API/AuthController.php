@@ -190,5 +190,4 @@ public function rejectRequest(Request $request, $requestId)
     }
 }
 
-   
 }
