@@ -128,6 +128,26 @@ class AuthController extends Controller
         ],200);
     }
 
+    public function showUser($id)
+    {   
+        // $authUserId = Auth::id();
+
+        $user = User::find($id);
+    
+        if ($user === null) {
+            $statusMsg = 'User not found!';
+            $statusCode = 404;
+        } else {
+            $statusMsg = 'success';
+            $statusCode = 200;
+        }
+    
+        return response()->json([
+            'status' => $statusMsg,
+            'data' => $user
+        ], $statusCode);
+    }
+
     public function logout(){
         Auth::user()->tokens()->delete();
         return response()->json([

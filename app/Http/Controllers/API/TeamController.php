@@ -58,7 +58,7 @@ class TeamController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'size' => 'required|integer|max:4',
+            'size' => 'required|integer|max:5',
         ]);
     
         if ($validator->fails()) {
@@ -152,8 +152,13 @@ class TeamController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+<<<<<<< HEAD
         
     
+=======
+
+
+>>>>>>> justin
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time().'.'.$image->getClientOriginalExtension();
@@ -221,7 +226,6 @@ class TeamController extends Controller
             ], 404);
         }
 
-   
         if ($team->size !== null && $team->users->count() >= $team->size) {
             return response()->json([
                 'status' => 'error',
