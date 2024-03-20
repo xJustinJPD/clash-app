@@ -124,14 +124,15 @@ class TeamController extends Controller
             ], 404);
         }
 
-        // if (Auth::user()->roles->contains('name', 'admin')) {
-        //     $validator = Validator::make($request->all(), [
-        //         'name' => 'required|string|max:50',
-        //         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        //         'wins' => 'integer',
-        //         'losses' => 'integer'
-        //     ]);
-        // } else {
+        if (Auth::user()->roles->contains('name', 'admin')) {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:50',
+                'size' => 'required|integer|max:5',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'wins' => 'integer',
+                'losses' => 'integer'
+            ]);
+        } else {
             if ($team->creator_id !== Auth::id()) {
                 return response()->json([
                     'status' => 'Error',
@@ -169,6 +170,7 @@ class TeamController extends Controller
             'data' => new TeamResource($team)
         ], 200);
     }
+}
 
     public function destroy(Request $request, $id)
     {
