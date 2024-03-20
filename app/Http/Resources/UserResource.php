@@ -27,7 +27,7 @@ class UserResource extends JsonResource
             "kills"=> $this->kills,
             "deaths"=>$this->deaths,
             "rank"=> $this->rank,
-            "image"=> $this->image,
+            "image"=> asset('public/images/'.$this->image),
             "wins"=> $this->wins,
             "losses"=> $this->losses,
             'user-win-ratio' => $ratio,
