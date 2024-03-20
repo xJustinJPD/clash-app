@@ -130,23 +130,25 @@ class AuthController extends Controller
 
     public function showUser($id)
     {   
-        // $authUserId = Auth::id();
-
         $user = User::find($id);
-    
+        
         if ($user === null) {
             $statusMsg = 'User not found!';
             $statusCode = 404;
         } else {
+            // Load the teams related to the user
+            $user->load('teams');
+            
             $statusMsg = 'success';
             $statusCode = 200;
         }
     
         return response()->json([
             'status' => $statusMsg,
-            'data' => $user
+            'data' =>  new UserResource($user),
         ], $statusCode);
     }
+    
 
     public function logout(){
         Auth::user()->tokens()->delete();

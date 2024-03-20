@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Teams\TeamResource;
 class UserResource extends JsonResource
 {
     /**
@@ -31,6 +32,7 @@ class UserResource extends JsonResource
             "losses"=> $this->losses,
             'user-win-ratio' => $ratio,
             'user-kd-ratio' => $kdRatio,
+            'teams' => TeamResource::collection($this->whenLoaded('teams')), 
         ];
     }
 }
