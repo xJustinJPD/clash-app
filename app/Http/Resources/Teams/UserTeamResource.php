@@ -25,7 +25,7 @@ class UserTeamResource extends JsonResource
             "kills"=> $this->kills,
             "deaths"=>$this->deaths,
             "rank"=> $this->rank,
-            "image"=> $this->image,
+            "image"=> asset('images/'.$this->image),
             "wins"=> $this->wins,
             "losses"=> $this->losses,
             "rank"=> $this->rank,

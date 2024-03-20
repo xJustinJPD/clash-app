@@ -24,7 +24,7 @@ class TeamResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'size' => $this->size,
-            'image' => $this->image,
+            "image"=> asset('images/'.$this->image),
             'wins' => $this->wins,
             'losses' => $this->losses,
             'rank' => $this->rank,
