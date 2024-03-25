@@ -214,4 +214,60 @@ public function rejectRequest(Request $request, $requestId)
     }
 }
 
+public function updateUser(Request $request, $id)
+    {   
+        $authUserId = Auth::id();
+
+        $user = User::findorfail($id);
+
+        if ($user === null) {
+            return response()->json([
+                'status' => 'User not found!',
+                'data' => null
+            ], 404);
+        }
+
+        if ($authUserId == $id) {
+            $validator = Validator::make($request->all(), [
+                'username' => 'required|string|max:50',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        } else {
+            if ($id !== $authUserId) {
+                return response()->json([
+                    'status' => 'Error',
+                    'message' => 'You are not authorized to perform this action.'
+                ], 403);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'username' => 'required|string|max:50',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        // }
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'Error: see below',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+        }
+
+        $user->username = $request->input('username');
+        $user->image = $imageName;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'data' => new UserResource($user)
+        ], 200);
+    }
+}
+
 }
