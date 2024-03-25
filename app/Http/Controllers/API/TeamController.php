@@ -128,9 +128,34 @@ class TeamController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:50',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'size' => 'required|integer|max:5',
                 'wins' => 'integer',
                 'losses' => 'integer'
             ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'Error: see below',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+    
+    
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $image->move(public_path('images'), $imageName);
+            }
+    
+            $team->name = $request->input('name');
+            $team->size = $request->input('size');
+            $team->wins = $request->input('wins');
+            $team->losses = $request->input('losses');
+            $team->image = $imageName;
+            $team->save();
+            return response()->json([
+                'status' => 'success',
+                'data' => new TeamResource($team)
+            ], 200);
         } else {
             if ($team->creator_id !== Auth::id()) {
                 return response()->json([

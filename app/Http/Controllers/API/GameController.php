@@ -149,9 +149,6 @@ class GameController extends Controller
                 'message' => 'You are not authorized to update the game results.',
             ], 403);
         }
-        
-    
-       
         $validator = Validator::make($request->all(), [
             'team_1_score' => 'nullable|integer|min:0',
             'team_2_score' => 'nullable|integer|min:0',
@@ -160,7 +157,6 @@ class GameController extends Controller
             'team_1_result' => 'nullable|boolean',
             'team_2_result' => 'nullable|boolean',
         ]);
-    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -168,6 +164,7 @@ class GameController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+        
         if (Auth::user()->roles->contains('name', 'admin')) {
             $validator = Validator::make($request->all(), [
                 'team_1_score' => 'nullable|integer|min:0',
@@ -177,8 +174,48 @@ class GameController extends Controller
                 'team_1_result' => 'nullable|boolean',
                 'team_2_result' => 'nullable|boolean'
             ]);
+            if ($request->has('team_1_score')) {
+                $game->team_1_score = $request->input('team_1_score');
+            }
+        
+            if ($request->has('team_2_score')) {
+                $game->team_2_score = $request->input('team_2_score');
+            }
+        
+            if ($request->has('team_1_result')) {
+                $game->team_1_result = $request->input('team_1_result');
+            }
+        
+            if ($request->has('team_2_result')) {
+                $game->team_2_result = $request->input('team_2_result');
+            }
+        
+            if ($request->hasFile('team_1_image')) {
+                $team1Image = $request->file('team_1_image');
+                $team1ImageName = 'team_' . $team1->id . '_game_' . $game->id . '_' . time() . '.' . $team1Image->getClientOriginalExtension();
+                $team1Image->move(public_path('images'), $team1ImageName);
+                $game->team_1_image = $team1ImageName;
+            }
+        
+            if ($request->hasFile('team_2_image')) {
+                $team2Image = $request->file('team_2_image');
+                $team2ImageName = 'team_' . $team2->id . '_game_' . $game->id . '_' . time() . '.' . $team2Image->getClientOriginalExtension();
+                $team2Image->move(public_path('images'), $team2ImageName);
+                $game->team_2_image = $team2ImageName;
+            }
+
+            $game->status = 'finished';
+            $game->save();
+        
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Game results updated successfully.',
+                'data' => new GameResource($game)
+            ], 200);
         }
-       
+
+      
+
         if ($request->has('team_1_score') && $user->id === $team1->creator_id) {
             $game->team_1_score = $request->input('team_1_score');
         }
@@ -200,19 +237,17 @@ class GameController extends Controller
             $team1Image = $request->file('team_1_image');
             $team1ImageName = 'team_' . $team1->id . '_game_' . $game->id . '_' . time() . '.' . $team1Image->getClientOriginalExtension();
             $team1Image->move(public_path('images'), $team1ImageName);
-            $team1->image = $team1ImageName;
-            $team1->save();
+            $game->team_1_image = $team1ImageName; 
         }
     
         if ($request->hasFile('team_2_image') && $user->id === $team2->creator_id) {
             $team2Image = $request->file('team_2_image');
             $team2ImageName = 'team_' . $team2->id . '_game_' . $game->id . '_' . time() . '.' . $team2Image->getClientOriginalExtension();
             $team2Image->move(public_path('images'), $team2ImageName);
-            $team2->image = $team2ImageName;
-            $team2->save();
+            $game->team_2_image = $team2ImageName;
         }
 
-
+     
         $game->status = 'finished';
         $game->save();
     
