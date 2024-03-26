@@ -63,6 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stats/{id}', [UserTeamGameStatsController::class, 'show']);
     Route::put('/stats/{id}', [UserTeamGameStatsController::class, 'update']);
     Route::delete('/stats/{id}', [UserTeamGameStatsController::class, 'destroy']);
+    Route::get('/stats/{gameId}/{teamId}', [UserTeamGameStatsController::class, 'getRelevantUsers']);
+
 
     //friend requests
     //the id of the user you want to send this to

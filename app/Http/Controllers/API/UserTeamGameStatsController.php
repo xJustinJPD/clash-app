@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserTeamGameStats;
 use App\Http\Resources\Stats\UserTeamGameStatsResource;
+use App\Models\Game;
+use App\Models\Team;
+use App\Models\User;
 
 class UserTeamGameStatsController extends Controller
 {
@@ -56,7 +59,52 @@ class UserTeamGameStatsController extends Controller
         ], 200);
 
     }
-
+    public function getRelevantUsers(Request $request, $gameId, $teamId)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not logged in.'
+            ], 401);
+        }
+    
+        // Fetch the game
+        $game = Game::find($gameId);
+        if ($game === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Game not found.'
+            ], 404);
+        }
+    
+        // Fetch the team
+        $team = Team::find($teamId);
+        if ($team === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Team not found.'
+            ], 404);
+        }
+    
+        
+        if (!$user->roles->contains('name', 'admin') && $user->id !== $team->creator_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to view the users for this game and team.'
+            ], 403);
+        }
+    
+        // Fetch all the users related to the game and team
+        $users = $team->users()->whereHas('gameStats', function ($query) use ($gameId) {
+            $query->where('game_id', $gameId);
+        })->get();
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => $users,
+        ], 200);
+    }
     public function update(Request $request, $id)
     {
         $userTeamGameStats = UserTeamGameStats::findOrFail($id);
