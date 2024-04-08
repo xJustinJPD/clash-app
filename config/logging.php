@@ -7,6 +7,11 @@ use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
 
+    'broadcast' => [
+        'driver' => 'log',
+        'level' => 'info',
+    ],
+    
     /*
     |--------------------------------------------------------------------------
     | Default Log Channel
