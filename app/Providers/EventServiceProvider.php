@@ -8,8 +8,10 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Events\GameCreated;
 use App\Events\GameUpdated;
+use App\Events\FriendRequestReceived;
 use App\Listeners\ProcessGameStats;
-use App\Listeners\UpdateWinsAndLosses;
+
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,7 @@ class EventServiceProvider extends ServiceProvider
         GameCreated::class => [
             ProcessGameStats::class,
         ],
+        
     ];
 
     /**

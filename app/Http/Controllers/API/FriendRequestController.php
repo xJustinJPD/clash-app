@@ -8,7 +8,11 @@ use App\Models\User;
 use App\Models\Friend;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Friends\FriendResource;
+use App\Http\Resources\Friends\SentFriendResource;
+use App\Events\FriendRequestReceived;
 use Auth;
+
+
 
 class FriendRequestController extends Controller
 {
@@ -21,7 +25,6 @@ class FriendRequestController extends Controller
 
     
     auth()->user()->friends()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
-    
     return response()->json(['message' => 'Friend request sent.'], 200);
 }
 
@@ -35,10 +38,10 @@ class FriendRequestController extends Controller
             $sentRequests = Friend::where('user_id', $user->id)
                 ->where('status', 'pending')
                 ->get();
-    
+                
             return response()->json([
                 'message' => 'Sent friend requests retrieved successfully.',
-                'requests' => $sentRequests,
+                'requests' => SentFriendResource::collection($sentRequests),
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to retrieve sent friend requests.'], 500);
@@ -55,10 +58,11 @@ class FriendRequestController extends Controller
             $receivedRequests = Friend::where('friend_id', $user->id)
                 ->where('status', 'pending')
                 ->get();
-    
+              
+
             return response()->json([
                 'message' => 'Received friend requests retrieved successfully.',
-                'requests' => $receivedRequests,
+                'requests' => FriendResource::collection($receivedRequests),
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to retrieve received friend requests.'], 500);
@@ -112,5 +116,31 @@ class FriendRequestController extends Controller
             return response()->json(['message' => 'Failed to remove friendship.'], 500);
         }
     }
+   
+
+    public function cancelRequest(Request $request, $userId)
+    {
+        try {
+            $user = $request->user();
+            
+            $pendingRequest = Friend::where('user_id', $user->id)
+                ->where('friend_id', $userId)
+                ->where('status', 'pending')
+                ->first();
+    
+            if (!$pendingRequest) {
+                return response()->json(['message' => 'Pending friend request not found.'], 404);
+            }
+    
+            $pendingRequest->delete();
+    
+            return response()->json(['message' => 'Friend request canceled.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to cancel friend request.'], 500);
+        }
+    }
+    
+
+
     
 }

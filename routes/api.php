@@ -7,7 +7,7 @@ use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\GameController;
 use App\Http\Controllers\API\UserTeamGameStatsController;
 use App\Http\Controllers\API\FriendRequestController;
-
+use App\Http\Controllers\API\BroadcastTestController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,6 +23,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 // Protected routes, must be logged in to view
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/test-broadcasting', [BroadcastTestController::class, 'testBroadcasting']);
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::get('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/user/all', [AuthController::class, 'viewAllUsers']);
@@ -74,10 +75,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/requests/{requestId}/reject', [AuthController::class, 'rejectRequest'])->name('reject-request');
     Route::get('/requests/sent', [FriendRequestController::class, 'viewSentRequests'])->name('view-sent-requests');
     Route::get('/requests/received', [FriendRequestController::class, 'viewReceivedRequests'])->name('view-received-requests');
+    Route::delete('/requests/{userId}/cancel', [FriendRequestController::class, 'cancelRequest'])->name('cancel-friend-request');
     //this is still only showing the users in the user_id 
     Route::get('/friends', [FriendRequestController::class, 'getAllFriends'])->name('get-all-friends');
     //its the id of the other user not the id of the table
     Route::delete('/friends/{id}', [FriendRequestController::class, 'removeFriend'])->name('remove-friend');
+    
 
     
 
