@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Team;
 use App\Models\User;
+use App\Events\UserInvitedToTeam;
+use App\Models\UserTeamRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Teams\TeamResource;
 
@@ -127,7 +129,7 @@ class TeamController extends Controller
         if (Auth::user()->roles->contains('name', 'admin')) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:50',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
                 'wins' => 'integer',
                 'losses' => 'integer'
@@ -139,18 +141,20 @@ class TeamController extends Controller
                 ], 422);
             }
     
-    
+            
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('images'), $imageName);
+            } else {
+                $imageName = $team->imageFormal;
             }
     
             $team->name = $request->input('name');
             $team->size = $request->input('size');
             $team->wins = $request->input('wins');
-            $team->losses = $request->input('losses');
             $team->image = $imageName;
+            $team->losses = $request->input('losses');
             $team->save();
             return response()->json([
                 'status' => 'success',
@@ -166,14 +170,9 @@ class TeamController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:50',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
             ]);
-
-          
-        
-
-        
 
         if ($validator->fails()) {
             return response()->json([
@@ -187,6 +186,9 @@ class TeamController extends Controller
             $image = $request->file('image');
             $imageName = time().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('images'), $imageName);
+            $team->image = $imageName;
+        } else {
+            $imageName = $team->imageFormal;
         }
 
         $team->name = $request->input('name');
@@ -358,23 +360,19 @@ class TeamController extends Controller
         }
     
         $input = $request->all();
-        $userId = $input['user_id'] ?? null;
         $username = $input['username'] ?? null;
     
-        if (!$userId && !$username) {
+        if (!$username) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Please provide either user_id or username.'
+                'message' => 'Please provide username.'
             ], 400);
         }
     
         $user = null;
     
-        if ($userId) {
-            $user = User::find($userId);
-        }
     
-        if (!$user && $username) {
+        if ($username) {
             $user = User::where('username', $username)->first();
         }
     
@@ -407,29 +405,42 @@ class TeamController extends Controller
         }
     
         // $team->users()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
-        $team->users()->attach($user->id);
-    
+        // $team->users()->attach($user->id);
+        event(new UserInvitedToTeam($team, $user));
         return response()->json([
             'status' => 'success',
             'message' => 'User invited to the team successfully.'
         ], 200);
     }
 
-    // public function acceptInvite(Request $request, $teamId)
-    // {
-        
-    //     {
-    //         try {
-    //             $teamRequest = Team::findOrFail($requestId);
-
-        
-    //             $teamRequest->update(['status' => 'accepted']);
-        
-    //             return response()->json(['message' => 'Team request accepted.'], 200);
-    //         } catch (\Exception $e) {
-    //             return response()->json(['message' => 'Failed to accept Team request.'], 500);
-    //         }
-    //     }
-    // }
+    //easier to access the teams here rather then the other controller
+    public function acceptInvite(Request $request, $teamId)
+    {
+        try {
+            $user = $request->user();
+            
+            // Retrieve the Team by its ID
+            $team = Team::findOrFail($teamId);
+            
+            //all associated team invites with this user
+            $invite = UserTeamRequest::where('user_id', $user->id)
+                ->where('team_id', $team->id)
+                ->first();
+            
+            // If an invite exists, attached the user to the team
+            if ($invite) {
+                $team->users()->attach($user->id);
+                
+                // Delete the invite record to maintain database
+                $invite->delete();
+                
+                return response()->json(['message' => 'Invite accepted and joined the team successfully.'], 200);
+            } else {
+                return response()->json(['message' => 'No pending invitation found for this team.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to accept the invite and join the team.'], 500);
+        }
+    }
     
 }
