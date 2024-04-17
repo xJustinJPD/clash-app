@@ -7,6 +7,7 @@ use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\GameController;
 use App\Http\Controllers\API\UserTeamGameStatsController;
 use App\Http\Controllers\API\FriendRequestController;
+use App\Http\Controllers\API\UserTeamRequestController;
 use App\Http\Controllers\API\BroadcastTestController;
 /*
 |--------------------------------------------------------------------------
@@ -44,11 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/teams/{id}/leave', [TeamController::class, 'leaveTeam']);
     Route::delete('/teams/{id}/remove-user/{userId}', [TeamController::class, 'removeUser']);
     Route::post('/teams/{teamId}/invite-user', [TeamController::class, 'inviteUser']);
-    // Route::put('/teams/{requestId}/accept', [TeamController::class, 'acceptRequest'])->name('accept-request');
-    // Route::put('/teams/{requestId}/reject', [TeamController::class, 'rejectRequest'])->name('reject-request');
-    // Route::put('/teams/{requestId}/reject', [TeamController::class, 'rejectRequest'])->name('reject-request');
-
-
+  
+    //UserTeam Request Routes
+    Route::get('/user-teamrequests', [UserTeamRequestController::class, 'usersRequests']);
+    Route::get('/teams/{teamId}/userRequests', [UserTeamRequestController::class, 'teamUsers']);
+    Route::put('teams/{teamId}/accept-invite', [TeamController::class, 'acceptInvite']);
 
 
     //games routes
