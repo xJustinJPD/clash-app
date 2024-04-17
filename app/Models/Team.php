@@ -33,6 +33,16 @@ class Team extends Model
     {
         return $this->hasMany(UserTeamGameStats::class);
     }
+    public function updateUsersStats($teamResult)
+    {
+        $this->users->each(function ($user) use ($teamResult) {
+            // Update user stats based on team result
+            $user->wins += $teamResult ? 1 : 0;
+            $user->losses += $teamResult ? 0 : 1;
+            $user->rank += $teamResult ? 2 : ($user->rank > 0 ? -1 : 0);
+            $user->save();
+        });
+    }
     
 }
 
