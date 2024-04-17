@@ -146,7 +146,7 @@ class TeamController extends Controller
                 $image = $request->file('image');
                 $imageName = time().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('images'), $imageName);
-            } else {
+            } elseif (is_string($request->image)) {
                 $imageName = $team->imageFormal;
             }
     
@@ -187,7 +187,7 @@ class TeamController extends Controller
             $imageName = time().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('images'), $imageName);
             $team->image = $imageName;
-        } else {
+        } elseif (is_string($request->image)) {
             $imageName = $team->imageFormal;
         }
 
