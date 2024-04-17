@@ -10,6 +10,9 @@ use App\Events\GameCreated;
 use App\Events\GameUpdated;
 use App\Events\FriendRequestReceived;
 use App\Listeners\ProcessGameStats;
+use App\Events\UserInvitedToTeam;
+use App\Listeners\HandleUserTeamInvitation;
+
 
 
 
@@ -27,6 +30,9 @@ class EventServiceProvider extends ServiceProvider
         GameCreated::class => [
             ProcessGameStats::class,
         ],
+       UserInvitedToTeam::class => [
+        HandleUserTeamInvitation::class,
+       ]
         
     ];
 
