@@ -46,7 +46,7 @@ class UserTeamGameStatsController extends Controller
                 'message' => 'stat not found.',
             ], 404);
         }
-         if (!Auth::check()) {
+        if (!Auth::check()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'You are not logged in.'
