@@ -84,6 +84,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserTeamGameStats::class);
     }
+    public function updateUserStatsForGames()
+    {
+    
+    $totalKills = $this->gameStats()->sum('kills');
+    $totalDeaths = $this->gameStats()->sum('deaths');
+
+    
+    $this->update([
+        'kills' => $totalKills,
+        'deaths' => $totalDeaths,
+    ]);
+    }
+
     
     public function friends()
     {

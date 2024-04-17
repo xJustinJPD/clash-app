@@ -166,7 +166,7 @@ class UserTeamGameStatsController extends Controller
     
        
         $userTeamGameStats->save();
-    
+        $user->updateUserStatsForGames();
         return response()->json([
             'status' => 'success',
             'message' => 'UserTeamGameStats updated successfully.',
