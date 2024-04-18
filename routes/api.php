@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Team routes
     Route::get('/teams', [TeamController::class, 'index']);
+    //all teams associated with the user
     Route::get('/user-teams', [TeamController::class, 'userTeams']);
     Route::post('/teams', [TeamController::class, 'store']);
     Route::get('/teams/{id}', [TeamController::class, 'show']);
@@ -47,9 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/teams/{teamId}/invite-user', [TeamController::class, 'inviteUser']);
   
     //UserTeam Request Routes
+    //for users
     Route::get('/user-teamrequests', [UserTeamRequestController::class, 'usersRequests']);
+    // For Teams
     Route::get('/teams/{teamId}/userRequests', [UserTeamRequestController::class, 'teamUsers']);
-    Route::put('teams/{teamId}/accept-invite', [TeamController::class, 'acceptInvite']);
+    Route::put('/teams/{teamId}/accept-invite', [UserTeamRequestController::class, 'acceptInvite']);
+    Route::delete('teams/{teamId}/reject-invite', [UserTeamRequestController::class,'rejectInvite']);
+    Route::delete('/teams/user-requests/{userId}/{teamId}', [UserTeamRequestController::class,'cancelInvite']);
 
 
     //games routes

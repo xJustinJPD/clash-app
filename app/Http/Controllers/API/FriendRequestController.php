@@ -18,13 +18,34 @@ class FriendRequestController extends Controller
 {
     public function sendRequest(Request $request, User $user)
 {
-   
-    if ($user->id === auth()->id()) {
+    // Get the IDs of the current user and the friend 
+    $userId = auth()->id();
+    $friendId = $user->id;
+
+    // Check if the sender and receiver are the same user
+    if ($userId === $friendId) {
         return response()->json(['message' => 'You cannot send a friend request to yourself.'], 400);
     }
 
-    
+    // Check if a pending friend request already exists in either direction
+    $existingRequest = Friend::where(function ($query) use ($userId, $friendId) {
+        $query->where('user_id', $userId)
+              ->where('friend_id', $friendId)
+              ->where('status', 'pending');
+    })->orWhere(function ($query) use ($userId, $friendId) {
+        $query->where('user_id', $friendId)
+              ->where('friend_id', $userId)
+              ->where('status', 'pending');
+    })->exists();
+
+    // If a pending request already exists, return an error response
+    if ($existingRequest) {
+        return response()->json(['message' => 'Friend request already sent.'], 400);
+    }
+
+    // Attach the friend request with status 'pending'
     auth()->user()->friends()->attach($user->id, ['status' => 'pending', 'created_at' => now()]);
+
     return response()->json(['message' => 'Friend request sent.'], 200);
 }
 
