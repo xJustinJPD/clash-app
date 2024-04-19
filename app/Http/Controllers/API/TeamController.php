@@ -129,7 +129,7 @@ class TeamController extends Controller
         if (Auth::user()->roles->contains('name', 'admin')) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:50',
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imageFile' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
                 'wins' => 'integer',
                 'losses' => 'integer'
@@ -142,8 +142,8 @@ class TeamController extends Controller
             }
     
             
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
+            if ($request->hasFile('imageFile')) {
+                $image = $request->file('imageFile');
                 $imageName = time().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('images'), $imageName);
             } else {
@@ -181,19 +181,22 @@ class TeamController extends Controller
             ], 422);
         }
 
+        
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
+
+        if ($request->hasFile('imageFile')) {
+            $image = $request->file('imageFile');
             $imageName = time().'.'.$image->getClientOriginalExtension();
+                        // delete file with name $team->imageFormal
             $image->move(public_path('images'), $imageName);
             $team->image = $imageName;
-        } else {
-            $imageName = $team->imageFormal;
-        }
+        } 
+        // else {
+        //     $imageName = $team->imageFormal;
+        // }
 
         $team->name = $request->input('name');
         $team->size = $request->input('size');
-        $team->image = $imageName;
         $team->save();
         return response()->json([
             'status' => 'success',
