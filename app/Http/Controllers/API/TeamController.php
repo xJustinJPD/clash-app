@@ -190,16 +190,10 @@ class TeamController extends Controller
                         // delete file with name $team->imageFormal
             $image->move(public_path('images'), $imageName);
             $team->image = $imageName;
-<<<<<<< HEAD
-        } elseif (is_string($request->image)) {
-            $imageName = $team->imageFormal;
-        }
-=======
         } 
         // else {
         //     $imageName = $team->imageFormal;
         // }
->>>>>>> justin
 
         $team->name = $request->input('name');
         $team->size = $request->input('size');
