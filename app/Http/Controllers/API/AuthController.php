@@ -43,7 +43,7 @@ class AuthController extends Controller
             ]);
              
             $defaultRole = Role::where('name', 'customer')->first();
-            if ($defaultRole) {
+            if (!$defaultRole) {
             $user->roles()->attach($defaultRole);
             }
 

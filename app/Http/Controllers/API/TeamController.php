@@ -416,7 +416,6 @@ class TeamController extends Controller
         ], 200);
     }
 
-    //easier to access the teams here rather then the other controller
 
     
 }
