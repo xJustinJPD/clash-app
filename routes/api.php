@@ -53,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // For Teams
     Route::get('/teams/{teamId}/userRequests', [UserTeamRequestController::class, 'teamUsers']);
     Route::put('/teams/{teamId}/accept-invite', [UserTeamRequestController::class, 'acceptInvite']);
-    Route::delete('teams/{teamId}/reject-invite', [UserTeamRequestController::class,'rejectInvite']);
+    Route::delete('/teams/{teamId}/reject-invite', [UserTeamRequestController::class,'rejectInvite']);
     Route::delete('/teams/user-requests/{userId}/{teamId}', [UserTeamRequestController::class,'cancelInvite']);
 
 

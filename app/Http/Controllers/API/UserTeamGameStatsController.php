@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserTeamGameStats;
 use App\Http\Resources\Stats\UserTeamGameStatsResource;
+use App\Http\Resources\Stats\RelevantUserStatResource;
 use App\Models\Game;
 use App\Models\Team;
 use App\Models\User;
+
 
 class UserTeamGameStatsController extends Controller
 {
@@ -87,7 +89,6 @@ class UserTeamGameStatsController extends Controller
             ], 404);
         }
     
-        
         if (!$user->roles->contains('name', 'admin') && $user->id !== $team->creator_id) {
             return response()->json([
                 'status' => 'error',
@@ -95,14 +96,17 @@ class UserTeamGameStatsController extends Controller
             ], 403);
         }
     
-        // Fetch all the users related to the game and team
-        $users = $team->users()->whereHas('gameStats', function ($query) use ($gameId) {
-            $query->where('game_id', $gameId);
-        })->get();
-    
+       
+        $usersStats = UserTeamGameStats::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->with('user') 
+            ->get();
+
+        $formattedStats = RelevantUserStatResource::collection($usersStats);
+
         return response()->json([
             'status' => 'success',
-            'data' => $users,
+            'data' => $formattedStats,
         ], 200);
     }
     public function update(Request $request, $id)
