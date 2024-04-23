@@ -97,17 +97,35 @@ class UserTeamGameStatsController extends Controller
         }
     
        
-        $usersStats = UserTeamGameStats::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->with('user') 
-            ->get();
+        $userStats = UserTeamGameStats::where('game_id', $gameId)
+    ->where('team_id', $teamId)
+    ->with('user') // Load the user information
+    ->get();
 
-        $formattedStats = RelevantUserStatResource::collection($usersStats);
+// Check if any user statistics were retrieved
+if ($userStats->isEmpty()) {
+    return response()->json([
+        'status' => 'error',
+        'message' => 'No user statistics found for this game and team.',
+    ], 404);
+}
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $formattedStats,
-        ], 200);
+// Initialize an array to store formatted statistics
+$formattedStats = [];
+
+// Loop through each user statistic
+foreach ($userStats as $userStat) {
+    // Transform the user statistic into the appropriate resource format
+    $formattedStat = new RelevantUserStatResource($userStat);
+    
+    // Add the formatted statistic to the array
+    $formattedStats[] = $formattedStat;
+}
+
+return response()->json([
+    'status' => 'success',
+    'data' => $formattedStats,
+], 200);
     }
     public function update(Request $request, $id)
     {
