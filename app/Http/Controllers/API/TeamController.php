@@ -11,6 +11,7 @@ use App\Events\UserInvitedToTeam;
 use App\Models\UserTeamRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Teams\TeamResource;
+use Storage;
 
 class TeamController extends Controller
 {
@@ -74,8 +75,13 @@ class TeamController extends Controller
     
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-            $image->move(public_path('images'), $imageName);
+            if(env('IMAGE_ENGINE') == 's3'){
+                $imageName = Storage::disk('s3')->put('images', $image);
+            }
+            else{
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $image->move(public_path('images'), $imageName);
+            }
         }
     
     

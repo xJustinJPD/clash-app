@@ -16,8 +16,8 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('team_id')->unsigned();
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('team_id')->references('id')->on('teams')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('team_id')->references('id')->on('teams')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }

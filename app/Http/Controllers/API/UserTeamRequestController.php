@@ -34,28 +34,34 @@ class UserTeamRequestController extends Controller
     }
    
   
-public function teamUsers(Request $request, $teamId)
-{
-    try {
-       
-        $team = Team::findOrFail($teamId);
-
-       
-        $teamRequests = UserTeamRequest::where('team_id', $team->id)
-            ->where('status', 'pending')
-            ->with('user')
-            ->get();
-
-        $teamUsers = FriendUserResource::collection($teamRequests->pluck('user'));
-
-        return response()->json([
-            'message' => 'Retrieved team members successfully.',
-            'team_users' => $teamUsers,
-        ], 200);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Failed to retrieve team members.'], 500);
+    public function teamUsers(Request $request, $teamId)
+    {
+        try {
+           
+            $team = Team::findOrFail($teamId);
+    
+           
+            $teamRequests = UserTeamRequest::where('team_id', $team->id)
+                ->where('status', 'pending')
+                ->with('user')
+                ->get();
+    
+            $teamUsers = FriendUserResource::collection($teamRequests->pluck('user'))->map(function ($user) use ($team) {
+                return [
+                    'user' => $user,
+                    'team_id' => $team->id
+                ];
+            });
+    
+            return response()->json([
+                'message' => 'Retrieved team members successfully.',
+                'invites' => $teamUsers,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to retrieve team members.'], 500);
+        }
     }
-}
+    
 public function cancelInvite(Request $request, $userId, $teamId)
 {
     try {
