@@ -99,6 +99,39 @@ class Game extends Model
                     
                 // });
             }
+            if ($game->status === 'cancelled'){
+                if ($game->team_1_result === true) {
+                    $game->team1->wins += 1;
+                    //this calls a function within team model which updates all users accordingly to the result
+                    $game->team1->updateUsersStats(true);
+                } elseif ($game->team_2_result === true) {
+                    $game->team2->wins += 1;
+                    $game->team2->updateUsersStats(true);
+                }
+                elseif($game->team_2_result === false) {
+                    $game->team2->losses += 1;
+                    $game->team2->updateUsersStats(false);
+                }
+                elseif($game->team_1_result === false){
+                    $game->team1->losses += 1;
+                    $game->team1->updateUsersStats(false);
+                }
+    
+                // Update ranks for teams
+                if ($game->team_1_result === true) {
+                    $game->team1->rank += 2;
+                } elseif ($game->team_2_result === true) {
+                    $game->team2->rank += 2;
+                } elseif ($game->team_1_result === false && $game->team1->rank > 0) {
+                    $game->team1->rank -= 1;
+                } elseif ($game->team_2_result === false && $game->team2->rank > 0) {
+                    $game->team2->rank -= 1;
+                }
+    
+                // Save changes to teams
+                $game->team1->save();
+                $game->team2->save();
+            }
         });
     }
 }    

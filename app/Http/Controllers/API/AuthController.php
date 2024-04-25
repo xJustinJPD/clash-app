@@ -43,9 +43,9 @@ class AuthController extends Controller
             ]);
              
             $defaultRole = Role::where('name', 'customer')->first();
-            if (!$defaultRole) {
+            
             $user->roles()->attach($defaultRole);
-            }
+            
 
 
 
@@ -55,7 +55,9 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'Success',
                 'message'=>'Welcome to the community ' . $user->username,
-                'token' => $token
+                'token' => $token,
+                'id' => $user->id,
+                'role' => $user->roles->pluck('name')
             ],200);
         }
         catch(\Throwable $th){
