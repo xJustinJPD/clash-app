@@ -20,11 +20,16 @@ class TeamUserResource extends JsonResource
         $totalGames = $this->wins + $this->losses;
         $ratio = ($totalGames != 0) ? intval($this->wins / $totalGames * 100) : 0;
 
+        $imageUrl = asset('images/'.$this->image);
+
+        if(env('IMAGE_ENGINE') == 's3'){
+            $imageUrl = env('IMAGE_URL') . $this->image;
+        }
         return [
             'id' => $this->id,
             'name' => $this->name,
             'size' => $this->size,
-            "image"=> asset('images/'.$this->image),
+            "image"=> $imageUrl,
             'wins' => $this->wins,
             'losses' => $this->losses,
             'rank' => $this->rank,

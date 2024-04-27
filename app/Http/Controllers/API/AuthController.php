@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\Friend;
 use App\Http\Resources\UserResource;
 use Auth;
+use Storage;
 
 class AuthController extends Controller
 {
@@ -248,11 +249,23 @@ public function updateUser(Request $request, $id)
             'errors' => $validator->errors()
         ], 422);
     }
-
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imageName = time().'.'.$image->getClientOriginalExtension();
-        $image->move(public_path('images'), $imageName);
+    $imageFormal = $user->image;
+    if ($request->hasFile('imageFile')) {
+        $image = $request->file('imageFile');
+        if(env('IMAGE_ENGINE') == 's3'){
+            if($imageFormal != null){
+                Storage::disk('s3')->delete('images/'. $imageFormal);
+            }
+            $imageName = Storage::disk('s3')->put('images', $image);
+            
+        }
+        else{
+            if($imageFormal != null){
+                unlink(public_path('images/' . $imageFormal));
+                }
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+        }
         $user->image = $imageName; 
     }
 

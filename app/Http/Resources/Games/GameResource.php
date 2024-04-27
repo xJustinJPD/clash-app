@@ -17,7 +17,13 @@ class GameResource extends JsonResource
     public function toArray(Request $request): array
     {
         // return parent::toArray($request);
+        $imageUrl1 = asset('images/'.$this->team_1_image);
+        $imageUrl2 = asset('images/'.$this->team_2_image);
 
+        if(env('IMAGE_ENGINE') == 's3'){
+            $imageUrl1 = env('IMAGE_URL') . $this->team_1_image;
+            $imageUrl2 = env('IMAGE_URL') . $this->team_2_image;
+        }
         return [
             "id" => $this->id,
 			"team_id_1" => $this->team_id_1,
@@ -26,8 +32,8 @@ class GameResource extends JsonResource
 			"team_2_score" => $this->team_2_score,
 			"team_1_result" => $this->team_1_result,
 			"team_2_result" => $this->team_2_result,
-            "team_1_image"=> asset('images/'.$this->team_1_image),
-            "team_1_image"=> asset('images/'.$this->team_1_image),
+            "team_1_image"=> $imageUrl1,
+            "team_2_image"=> $imageUrl2,
 			"queue_type" => $this->queue_type,
 			"status" => $this->status,
             "team_1" => new TeamGameResource($this->team1),

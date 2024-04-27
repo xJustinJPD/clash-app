@@ -11,6 +11,7 @@ use App\Models\Team;
 use App\Http\Resources\Games\GameResource;
 use App\Events\GameCreated;
 use Auth;
+use Storage;
 
 class GameController extends Controller
 {
@@ -105,14 +106,6 @@ class GameController extends Controller
         'data' => new GameResource($game)
     ], 201);
 }
-
-    
-
-
-
-    
-
-    
     
 
     public function show($id)
@@ -211,16 +204,32 @@ class GameController extends Controller
         
             if ($request->hasFile('team_1_image')) {
                 $team1Image = $request->file('team_1_image');
-                $team1ImageName = 'team_' . $team1->id . '_game_' . $game->id . '_' . time() . '.' . $team1Image->getClientOriginalExtension();
-                $team1Image->move(public_path('images'), $team1ImageName);
-                $game->team_1_image = $team1ImageName;
+                if(env('IMAGE_ENGINE') == 's3'){
+                    $team1ImageName = Storage::disk('s3')->put('images', $image);
+                    $game->team_1_image = $team1ImageName;
+                }
+                else{
+                    $team1ImageName = 'team_' . $team1->id . '_game_' . $game->id . '_' . time() . '.' . $team1Image->getClientOriginalExtension();
+                    $team1Image->move(public_path('images'), $team1ImageName);
+                    $game->team_1_image = $team1ImageName;
+                }
+               
+               
             }
         
             if ($request->hasFile('team_2_image')) {
                 $team2Image = $request->file('team_2_image');
-                $team2ImageName = 'team_' . $team2->id . '_game_' . $game->id . '_' . time() . '.' . $team2Image->getClientOriginalExtension();
-                $team2Image->move(public_path('images'), $team2ImageName);
-                $game->team_2_image = $team2ImageName;
+                if(env('IMAGE_ENGINE') == 's3'){
+                    $team2ImageName = Storage::disk('s3')->put('images', $image);
+                    $game->team_2_image = $team2ImageName;
+                }
+                else{
+                    $team2ImageName = 'team_' . $team2->id . '_game_' . $game->id . '_' . time() . '.' . $team2Image->getClientOriginalExtension();
+                    $team2Image->move(public_path('images'), $team2ImageName);
+                    $game->team_2_image = $team2ImageName;
+                }
+                
+                
             }
 
             $game->status = 'finished';
@@ -254,16 +263,28 @@ class GameController extends Controller
         
         if ($request->hasFile('team_1_image') && $user->id === $team1->creator_id) {
             $team1Image = $request->file('team_1_image');
-            $team1ImageName = 'team_' . $team1->id . '_game_' . $game->id . '_' . time() . '.' . $team1Image->getClientOriginalExtension();
-            $team1Image->move(public_path('images'), $team1ImageName);
-            $game->team_1_image = $team1ImageName; 
+            if(env('IMAGE_ENGINE') == 's3'){
+                $team1ImageName = Storage::disk('s3')->put('images', $image);
+                $game->team_1_image = $team1ImageName;
+            }
+            else{
+                $team1ImageName = 'team_' . $team1->id . '_game_' . $game->id . '_' . time() . '.' . $team1Image->getClientOriginalExtension();
+                $team1Image->move(public_path('images'), $team1ImageName);
+                $game->team_1_image = $team1ImageName;
+            }
         }
     
         if ($request->hasFile('team_2_image') && $user->id === $team2->creator_id) {
             $team2Image = $request->file('team_2_image');
-            $team2ImageName = 'team_' . $team2->id . '_game_' . $game->id . '_' . time() . '.' . $team2Image->getClientOriginalExtension();
-            $team2Image->move(public_path('images'), $team2ImageName);
-            $game->team_2_image = $team2ImageName;
+            if(env('IMAGE_ENGINE') == 's3'){
+                $team2ImageName = Storage::disk('s3')->put('images', $image);
+                $game->team_2_image = $team2ImageName;
+            }
+            else{
+                $team2ImageName = 'team_' . $team2->id . '_game_' . $game->id . '_' . time() . '.' . $team2Image->getClientOriginalExtension();
+                $team2Image->move(public_path('images'), $team2ImageName);
+                $game->team_2_image = $team2ImageName;
+            }
         }
 
      

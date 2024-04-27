@@ -19,6 +19,11 @@ class UserResource extends JsonResource
         
         $kdRatio = ($this->deaths != 0) ? ($this->kills / $this->deaths) : $this->kills;
 
+        $imageUrl = asset('images/'.$this->image);
+
+        if(env('IMAGE_ENGINE') == 's3'){
+            $imageUrl = env('IMAGE_URL') . $this->image;
+        }
         return [
             "id" =>  $this->id,
             "username"=> $this->username,
@@ -27,11 +32,12 @@ class UserResource extends JsonResource
             "kills"=> $this->kills,
             "deaths"=>$this->deaths,
             "rank"=> $this->rank,
-            "image"=> asset('images/'.$this->image),
+            "image"=> $imageUrl,
             "wins"=> $this->wins,
             "losses"=> $this->losses,
             'user-win-ratio' => $ratio,
             'user-kd-ratio' => $kdRatio,
+            "imageFormal" => $this->image,
             'teams' => TeamResource::collection($this->whenLoaded('teams')), 
         ];
     }

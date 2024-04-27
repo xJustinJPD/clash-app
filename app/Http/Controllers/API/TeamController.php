@@ -71,7 +71,7 @@ class TeamController extends Controller
             ], 422);
         }
     
-        $imageName = 'no_image_available.jpg';
+       
     
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -82,13 +82,13 @@ class TeamController extends Controller
                 $imageName = time().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('images'), $imageName);
             }
+            $team->image = $imageName;
         }
     
     
         $team = new Team();
         $team->name = $request->input('name');
         $team->size = $request->input('size');
-        $team->image = $imageName;
         $team->creator_id = Auth::id();
         $team->save();
     
@@ -135,7 +135,7 @@ class TeamController extends Controller
         if (Auth::user()->roles->contains('name', 'admin')) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:50',
-                'imageFile' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
                 'wins' => 'integer',
                 'losses' => 'integer'
@@ -147,19 +147,30 @@ class TeamController extends Controller
                 ], 422);
             }
     
-            
+            $imageFormal = $team->image;
+
             if ($request->hasFile('imageFile')) {
                 $image = $request->file('imageFile');
-                $imageName = time().'.'.$image->getClientOriginalExtension();
-                $image->move(public_path('images'), $imageName);
-            } elseif (is_string($request->image)) {
-                $imageName = $team->imageFormal;
-            }
+                if(env('IMAGE_ENGINE') == 's3'){
+                    if($imageFormal != null){
+                        Storage::disk('s3')->delete('images/'. $imageFormal);
+                    }
+                    $imageName = Storage::disk('s3')->put('images', $image);
+                }
+                else{
+                    if($imageFormal != null){
+                        unlink(public_path('images/' . $imageFormal));
+                        }
+                    $imageName = time().'.'.$image->getClientOriginalExtension();
+                    $image->move(public_path('images'), $imageName);
+                   
+                }
+                 $team->image = $imageName;
+            } 
     
             $team->name = $request->input('name');
             $team->size = $request->input('size');
             $team->wins = $request->input('wins');
-            $team->image = $imageName;
             $team->losses = $request->input('losses');
             $team->save();
             return response()->json([
@@ -188,18 +199,26 @@ class TeamController extends Controller
         }
 
         
-
+        $imageFormal = $team->image;
 
         if ($request->hasFile('imageFile')) {
             $image = $request->file('imageFile');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-                        // delete file with name $team->imageFormal
-            $image->move(public_path('images'), $imageName);
-            $team->image = $imageName;
+            if(env('IMAGE_ENGINE') == 's3'){
+                if($imageFormal != null){
+                    Storage::disk('s3')->delete('images/'. $imageFormal);
+                }
+                $imageName = Storage::disk('s3')->put('images', $image);
+            }
+            else{
+                if($imageFormal != null){
+                    unlink(public_path('images/' . $imageFormal));
+                    }
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $image->move(public_path('images'), $imageName);
+            }
+             $team->image = $imageName;
         } 
-        // else {
-        //     $imageName = $team->imageFormal;
-        // }
+        
 
         $team->name = $request->input('name');
         $team->size = $request->input('size');
