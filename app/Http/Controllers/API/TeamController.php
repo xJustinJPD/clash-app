@@ -71,25 +71,27 @@ class TeamController extends Controller
             ], 422);
         }
     
-       
+        $team = new Team();
+        $team->name = $request->input('name');
+        $team->size = $request->input('size');
+        $team->creator_id = Auth::id();
     
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             if(env('IMAGE_ENGINE') == 's3'){
                 $imageName = Storage::disk('s3')->put('images', $image);
+                $team->image = $imageName;
             }
             else{
                 $imageName = time().'.'.$image->getClientOriginalExtension();
                 $image->move(public_path('images'), $imageName);
+                $team->image = $imageName;
             }
-            $team->image = $imageName;
+           
         }
     
     
-        $team = new Team();
-        $team->name = $request->input('name');
-        $team->size = $request->input('size');
-        $team->creator_id = Auth::id();
+      
         $team->save();
     
         
