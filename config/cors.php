@@ -19,9 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*', 'https://clash-d9110.web.app', 'http://clash-d9110.web.app'],
+    'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => ['/https?:\/\/clash-d9110\.web\.app\/?\z/'],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
