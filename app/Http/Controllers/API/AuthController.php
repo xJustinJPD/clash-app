@@ -278,6 +278,54 @@ public function updateUser(Request $request, $id)
         'data' => new UserResource($user)
     ], 200);
 }
+public function registerAdmin(Request $request)
+{
+    try {
+        // Check if the authenticated user is an admin
+        if (!Auth::user()->roles->contains('name', 'admin')) {
+            return response()->json(['message' => 'Unauthorized. Only admins can perform this action.'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|min:3|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        // Attach the admin role to the user
+        $adminRole = Role::where('name', 'admin')->first();
+        $user->roles()->attach($adminRole);
+
+        $token = $user->createToken('api-example-salt')->plainTextToken;
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'Admin user created successfully.',
+            'id' => $user->id,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'Failed to create admin user.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 
 
 }

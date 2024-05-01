@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/all', [AuthController::class, 'viewAllUsers']);
     Route::get('/user/{id}', [AuthController::class, 'showUser']);
     Route::put('/user/{id}', [AuthController::class, 'updateUser']);
-
+    Route::post('/user/adminCreate', [AuthController::class, 'registerAdmin']);
     
     // Team routes
     Route::get('/teams', [TeamController::class, 'index']);
@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/games', [GameController::class, 'store']);
     Route::put('/games/{id}', [GameController::class, 'update']);
     Route::put('/games/{id}/cancel', [GameController::class, 'cancel']);
+    Route::delete('/games/stopMatch/{id}', [GameController::class, 'stopMatchmake']);
 
     //user game stats
     Route::get('/stats', [UserTeamGameStatsController::class, 'index']);
