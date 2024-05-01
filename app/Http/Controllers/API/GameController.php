@@ -340,7 +340,43 @@ class GameController extends Controller
             ], 403);
         }
     }
-    
+    public function stopMatchmake(Request $request, $id)
+{
+    $game = Game::findOrFail($id);
+
+    if ($game === null) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Game not found.',
+        ], 404);
+    }
+
+    $user = Auth::user();
+    $team1 = $game->team1;
+    $team2 = $game->team2;
+
+    // Check if the authenticated user is the creator of team 1 or an admin of the team
+    if (($user->id === $team1->creator_id) || $user->roles->contains('name', 'admin')) {
+        // If team 2 is null, delete the game
+        if ($team2 === null) {
+            $game->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Matchmaking stopped successfully.',
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Matchmaking cannot be stopped because team 2 is already assigned.',
+            ], 403);
+        }
+    } else {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'You are not authorized to stop the matchmaking process.',
+        ], 403);
+    }
+}
 
     
  
