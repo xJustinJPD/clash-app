@@ -51,7 +51,7 @@ class TeamController extends Controller
     
         return response()->json([
             'status' => 'success',
-            'data' => $teams
+            'data' => TeamResource::collection($teams)
         ], 200);
     }
     
