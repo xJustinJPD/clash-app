@@ -41,8 +41,7 @@ class DiscordAuthController extends Controller
         // Handle the response from Discord
         if ($response->successful()) {
             $accessToken = $response['access_token'];
-            // You can store the access token in the session or database
-            return redirect()->route('home')->with('success', 'Logged in successfully!');
+            
         } else {
             return redirect()->route('login')->with('error', 'Failed to login!');
         }
