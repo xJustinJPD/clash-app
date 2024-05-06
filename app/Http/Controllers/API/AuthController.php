@@ -238,7 +238,8 @@ public function updateUser(Request $request, $id)
     }
 
     $validator = Validator::make($request->all(), [
-        'username' => 'required|string|max:50',
+        'username' => 'required|string|max:50|unique:users,username,'.$id,
+        'email' => 'required|email|max:255|unique:users,email,'.$id,
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'description' => 'nullable|string|max:250' 
     ]);
@@ -269,7 +270,11 @@ public function updateUser(Request $request, $id)
         $user->image = $imageName; 
     }
 
-    $user->username = $request->input('username');
+    if ($request->username !== null) {
+        $user->username = $request->input('username');
+    }
+   
+    $user->email = $request->input('email');
     $user->description = $request->input('description');
     $user->save();
 
@@ -324,6 +329,46 @@ public function registerAdmin(Request $request)
             'error' => $e->getMessage()
         ], 500);
     }
+}
+public function updatePassword(Request $request, $id)
+{
+    $authUserId = Auth::id();
+
+    $user = User::findOrFail($id);
+
+    if ($user === null) {
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'User not found!',
+        ], 404);
+    }
+
+    if ($authUserId != $id) {
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'You are not authorized to perform this action.'
+        ], 403);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'password' => 'required|min:6',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'Validation error',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $user->password = bcrypt($request->input('password'));
+    $user->save();
+
+    return response()->json([
+        'status' => 'Success',
+        'message' => 'Password updated successfully.'
+    ], 200);
 }
 
 

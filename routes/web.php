@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\API\DiscordAuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,8 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
+
+Route::get('/auth/discord', [DiscordAuthController::class, 'redirectToDiscord'])->name('discord.redirect');
+Route::get('/auth/discord/callback', [DiscordAuthController::class, 'handleCallback'])->name('discord.callback');
+
+
 
 // Route::resource('/admin/books', AdminBookController::class)->middleware(['auth', 'role:admin'])->names('admin.books');

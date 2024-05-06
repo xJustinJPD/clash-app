@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/{id}', [AuthController::class, 'showUser']);
     Route::put('/user/{id}', [AuthController::class, 'updateUser']);
     Route::post('/user/adminCreate', [AuthController::class, 'registerAdmin']);
+    Route::put('/user/{id}/update-password', [AuthController::class, 'updatePassword']);
     
     // Team routes
     Route::get('/teams', [TeamController::class, 'index']);

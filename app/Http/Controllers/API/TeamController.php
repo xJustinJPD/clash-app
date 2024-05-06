@@ -59,7 +59,7 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50',
+            'name' => 'required|string|max:50|unique:teams',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'size' => 'required|integer|max:5',
         ]);
@@ -136,7 +136,7 @@ class TeamController extends Controller
 
         if (Auth::user()->roles->contains('name', 'admin')) {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:50',
+                'name' => 'string|max:50|unique:teams,name,',$id,
                 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
                 'wins' => 'integer',
@@ -188,7 +188,7 @@ class TeamController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:50',
+                'name' => 'string|max:50|unique:teams,name,'.$id,
                 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
             ]);
@@ -221,7 +221,6 @@ class TeamController extends Controller
              $team->image = $imageName;
         } 
         
-
         $team->name = $request->input('name');
         $team->size = $request->input('size');
         $team->save();
