@@ -263,7 +263,7 @@ class TeamController extends Controller
         if ($team->users()->count() > 0) {
             $team->users()->detach();
         }
-
+        Storage::disk('s3')->delete('images/'. $imageFormal);
         $team->delete();
 
         return response()->json([
