@@ -75,7 +75,7 @@ class TeamController extends Controller
         $team->name = $request->input('name');
         $team->size = $request->input('size');
         $team->creator_id = Auth::id();
-    
+        
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             if(env('IMAGE_ENGINE') == 's3'){
@@ -88,6 +88,8 @@ class TeamController extends Controller
                 $team->image = $imageName;
             }
            
+        }else{
+            $team->image = 'no_image_available.jpg';
         }
     
     

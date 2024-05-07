@@ -15,9 +15,9 @@ use App\Http\Controllers\API\DiscordAuthController;
 
 
 
-
-Route::get('/auth/discord', [DiscordAuthController::class, 'redirectToDiscord'])->name('discord.redirect');
-Route::get('/auth/discord/callback', [DiscordAuthController::class, 'handleCallback'])->name('discord.callback');
+// not being used in backend
+// Route::get('/auth/discord', [DiscordAuthController::class, 'redirectToDiscord'])->name('discord.redirect');
+// Route::get('/auth/discord/callback', [DiscordAuthController::class, 'handleCallback'])->name('discord.callback');
 
 
 

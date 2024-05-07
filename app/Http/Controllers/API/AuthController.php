@@ -40,7 +40,8 @@ class AuthController extends Controller
             [
                 'username' => $request->username,
                 'email' => $request->email,
-                'password' => bcrypt($request->password)
+                'password' => bcrypt($request->password),
+                'image' => 'no_image_available.jpg',
             ]);
              
             $defaultRole = Role::where('name', 'customer')->first();

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
+//this is not used
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
