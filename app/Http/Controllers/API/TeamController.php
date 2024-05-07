@@ -89,7 +89,7 @@ class TeamController extends Controller
             }
            
         }else{
-            $team->image = 'no_image_available.jpg';
+            $team->image = 'images/no_image_available.jpg';
         }
     
     
