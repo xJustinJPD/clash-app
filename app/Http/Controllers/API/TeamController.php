@@ -139,7 +139,7 @@ class TeamController extends Controller
         if (Auth::user()->roles->contains('name', 'admin')) {
             $validator = Validator::make($request->all(), [
                 'name' => 'string|max:50|unique:teams,name,',$id,
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
                 'wins' => 'integer',
                 'losses' => 'integer'
@@ -191,7 +191,7 @@ class TeamController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'name' => 'string|max:50|unique:teams,name,'.$id,
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'size' => 'required|integer|max:5',
             ]);
 
